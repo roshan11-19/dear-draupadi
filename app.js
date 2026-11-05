@@ -19,7 +19,7 @@ const App = {
     hamperCategory: 'all',
     wishlistCategory: 'all',
     currentCheckoutStep: 'address',
-    productsPerPage: 50,
+    productsPerPage: 12,
     currentProductPage: 1,
 
     init() {
@@ -50,10 +50,18 @@ const App = {
         window.addEventListener('customer:auth', () => {
             this.updateAccountNavUI();
             this.renderCustomerAccount();
+            this.updateWishlistCount();
+            this.renderWishlistDrawer();
+            this.renderProducts();
+            this.updateCartUI();
         });
         window.addEventListener('customer:logout', () => {
             this.updateAccountNavUI();
             this.closeCustomerAccount();
+            this.updateWishlistCount();
+            this.renderWishlistDrawer();
+            this.renderProducts();
+            this.updateCartUI();
         });
         window.addEventListener('addresses:updated', () => {
             this.renderCustomerAddresses();
@@ -63,6 +71,21 @@ const App = {
             // If tracking modal is open, refresh tracking
             const lastId = localStorage.getItem('dd_last_order_id');
             if (lastId) this.refreshTrackingIfOpen(lastId);
+        });
+
+        // Cross-tab synchronization via storage event
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'dd_products_v2') {
+                this.renderProducts();
+            }
+            if (e.key === 'dd_cart_v2' || (e.key && e.key.startsWith('dd_cart_'))) {
+                this.updateCartUI();
+            }
+            if (e.key === 'dd_wishlist_v2' || (e.key && e.key.startsWith('dd_wishlist_'))) {
+                this.updateWishlistCount();
+                this.renderWishlistDrawer();
+                this.renderProducts();
+            }
         });
     },
 
@@ -1903,6 +1926,10 @@ const App = {
             Store.clearCart();
             this.appliedCoupon = null;
             localStorage.removeItem(STORAGE_KEYS.APPLIED_COUPON);
+
+            // Re-render products to reflect immediate stock deduction & out of stock tags
+            this.renderProducts();
+            this.updateCartUI();
 
             // Close checkout and show success
             this.closeCheckout();

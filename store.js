@@ -500,7 +500,7 @@ const Store = {
 
     // ==================== SUPABASE PRODUCT CATALOGUE INTEGRATION ====================
     async fetchProductsFromSupabase() {
-        const client = window.supabaseClient;
+        const client = window.supabaseAdminClient || window.supabaseClient;
         if (!client) {
             console.log("🌸 [Dear Draupadi] Supabase client not initialized; running with cached local catalog.");
             return;
@@ -569,6 +569,7 @@ const Store = {
             }
 
             if (prodData && prodData.length > 0) {
+                const localProducts = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS) || '[]');
                 const normalizedProducts = prodData.map((p, index) => {
                     const id = p.id ? String(p.id) : `DD-PRD-${index + 1}`;
                     const name = p.name || p.title || "Handmade Piece";
@@ -629,7 +630,18 @@ const Store = {
 
                     const price = parseFloat(p.price) || 99;
                     const originalPrice = parseFloat(p.original_price || p.originalPrice) || null;
-                    const stock = (p.stock !== undefined && p.stock !== null && !isNaN(parseInt(p.stock, 10))) ? parseInt(p.stock, 10) : 10;
+                    let stock = (p.stock !== undefined && p.stock !== null && !isNaN(parseInt(p.stock, 10))) ? parseInt(p.stock, 10) : 10;
+
+                    // Preserve locally decremented stock from recent orders against cloud latency
+                    const recent = this._recentStockDeductions ? (this._recentStockDeductions[String(id)] || (name ? this._recentStockDeductions[name.trim().toLowerCase()] : null)) : null;
+                    if (recent && (Date.now() - recent.time < 45000)) {
+                        stock = Math.min(stock, recent.stock);
+                    } else {
+                        const localMatch = localProducts.find(lp => String(lp.id) === String(id) || (lp.name && name && lp.name.trim().toLowerCase() === name.trim().toLowerCase()));
+                        if (localMatch && typeof localMatch.stock === 'number' && localMatch.stock < stock) {
+                            stock = localMatch.stock;
+                        }
+                    }
                     const rating = parseFloat(p.rating) || 5.0;
                     const reviewCount = parseInt(p.review_count || p.reviewCount) || 1;
                     const featured = Boolean(p.featured);
@@ -1348,6 +1360,7 @@ const Store = {
         localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
 
         // 2. Deduct inventory (including individual component products of custom hampers)
+        this._recentStockDeductions = this._recentStockDeductions || {};
         newOrder.items.forEach(item => {
             if (item.isHamper && Array.isArray(item.hamperItems)) {
                 item.hamperItems.forEach(hi => {
@@ -1356,6 +1369,8 @@ const Store = {
                         const curStock = (typeof prod.stock === 'number' && !isNaN(prod.stock)) ? prod.stock : 10;
                         const qtyToDeduct = (Number(hi.quantity) || 1) * (Number(item.quantity) || 1);
                         prod.stock = Math.max(0, curStock - qtyToDeduct);
+                        this._recentStockDeductions[String(prod.id)] = { stock: prod.stock, time: Date.now() };
+                        if (prod.name) this._recentStockDeductions[prod.name.trim().toLowerCase()] = { stock: prod.stock, time: Date.now() };
                         if (!options.skipSupabaseSync) {
                             this.syncStockToSupabase(prod.id, prod.stock, prod.name);
                         }
@@ -1367,6 +1382,8 @@ const Store = {
                     const curStock = (typeof prod.stock === 'number' && !isNaN(prod.stock)) ? prod.stock : 10;
                     const qtyToDeduct = Number(item.quantity) || 1;
                     prod.stock = Math.max(0, curStock - qtyToDeduct);
+                    this._recentStockDeductions[String(prod.id)] = { stock: prod.stock, time: Date.now() };
+                    if (prod.name) this._recentStockDeductions[prod.name.trim().toLowerCase()] = { stock: prod.stock, time: Date.now() };
                     if (!options.skipSupabaseSync) {
                         this.syncStockToSupabase(prod.id, prod.stock, prod.name);
                     }
@@ -1377,6 +1394,9 @@ const Store = {
 
         // Save last created customer order for quick tracking
         localStorage.setItem('dd_last_order_id', orderNumber);
+        if (orderData.customer?.email) {
+            localStorage.setItem(`dd_last_order_id_${orderData.customer.email.trim().toLowerCase()}`, orderNumber);
+        }
 
         // Dispatch WhatsApp order notification architecture
         if (typeof WhatsAppNotificationService !== 'undefined') {
@@ -2028,16 +2048,35 @@ const Store = {
     },
 
     // ==================== CART ====================
+    getCartStorageKey() {
+        const session = this.getCustomerSession();
+        if (session && session.isLoggedIn && session.user && session.user.email) {
+            return `dd_cart_${session.user.email.trim().toLowerCase()}`;
+        }
+        return 'dd_cart_guest';
+    },
+
     getCart() {
+        const key = this.getCartStorageKey();
         try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEYS.CART)) || [];
+            const val = localStorage.getItem(key);
+            if (val !== null) return JSON.parse(val);
+            if (key === 'dd_cart_guest') {
+                const legacy = localStorage.getItem(STORAGE_KEYS.CART);
+                if (legacy) return JSON.parse(legacy);
+            }
+            return [];
         } catch (e) {
             return [];
         }
     },
 
     saveCart(cartItems) {
-        localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cartItems));
+        const key = this.getCartStorageKey();
+        localStorage.setItem(key, JSON.stringify(cartItems));
+        if (key === 'dd_cart_guest') {
+            localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cartItems));
+        }
         this.emit('cart:updated', cartItems);
     },
 
@@ -2225,16 +2264,35 @@ const Store = {
     },
 
     // ==================== WISHLIST ====================
+    getWishlistStorageKey() {
+        const session = this.getCustomerSession();
+        if (session && session.isLoggedIn && session.user && session.user.email) {
+            return `dd_wishlist_${session.user.email.trim().toLowerCase()}`;
+        }
+        return 'dd_wishlist_guest';
+    },
+
     getWishlist() {
+        const key = this.getWishlistStorageKey();
         try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEYS.WISHLIST)) || [];
+            const val = localStorage.getItem(key);
+            if (val !== null) return JSON.parse(val);
+            if (key === 'dd_wishlist_guest') {
+                const legacy = localStorage.getItem(STORAGE_KEYS.WISHLIST);
+                if (legacy) return JSON.parse(legacy);
+            }
+            return [];
         } catch (e) {
             return [];
         }
     },
 
     saveWishlist(items) {
-        localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(items));
+        const key = this.getWishlistStorageKey();
+        localStorage.setItem(key, JSON.stringify(items));
+        if (key === 'dd_wishlist_guest') {
+            localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(items));
+        }
         this.emit('wishlist:updated', items);
     },
 
@@ -2372,6 +2430,8 @@ const Store = {
                 localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
                 this.recordCustomerRegistration(cleanEmail, cleanName);
                 this.emit('customer:auth', session);
+                this.emit('wishlist:updated', this.getWishlist());
+                this.emit('cart:updated', this.getCart());
                 return { success: true, user: session.user };
             } catch (err) {
                 return { success: false, message: err.message };
@@ -2391,6 +2451,8 @@ const Store = {
         localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
         this.recordCustomerRegistration(cleanEmail, cleanName);
         this.emit('customer:auth', session);
+        this.emit('wishlist:updated', this.getWishlist());
+        this.emit('cart:updated', this.getCart());
         return { success: true, user: session.user };
     },
 
@@ -2423,6 +2485,8 @@ const Store = {
                 };
                 localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
                 this.emit('customer:auth', session);
+                this.emit('wishlist:updated', this.getWishlist());
+                this.emit('cart:updated', this.getCart());
                 return { success: true, user: session.user };
             } catch (err) {
                 return { success: false, message: err.message };
@@ -2445,12 +2509,17 @@ const Store = {
         };
         localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
         this.emit('customer:auth', session);
+        this.emit('wishlist:updated', this.getWishlist());
+        this.emit('cart:updated', this.getCart());
         return { success: true, user: session.user };
     },
 
     customerLogout() {
         localStorage.removeItem(STORAGE_KEYS.CUSTOMER_SESSION);
+        localStorage.removeItem('dd_last_order_id');
         this.emit('customer:logout');
+        this.emit('wishlist:updated', this.getWishlist());
+        this.emit('cart:updated', this.getCart());
     },
 
     getCustomerOrders(emailOrPhone) {

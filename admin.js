@@ -34,17 +34,33 @@ const AdminApp = {
         this.checkAuth();
         this.bindEvents();
 
-        // Initial cloud orders sync
-        if (typeof Store !== 'undefined' && Store.fetchOrdersFromSupabase) {
-            Store.fetchOrdersFromSupabase();
+        // Initial cloud orders & products catalog sync
+        if (typeof Store !== 'undefined') {
+            if (Store.fetchOrdersFromSupabase) Store.fetchOrdersFromSupabase();
+            if (Store.fetchProductsFromSupabase) Store.fetchProductsFromSupabase();
         }
 
-        // Automatic periodic cloud orders synchronization (every 25 seconds)
+        // Automatic periodic cloud synchronization (every 20 seconds)
         setInterval(() => {
-            if (typeof Store !== 'undefined' && Store.fetchOrdersFromSupabase && Store.isAdminAuthenticated()) {
-                Store.fetchOrdersFromSupabase();
+            if (typeof Store !== 'undefined' && Store.isAdminAuthenticated()) {
+                if (Store.fetchOrdersFromSupabase) Store.fetchOrdersFromSupabase();
+                if (Store.fetchProductsFromSupabase) Store.fetchProductsFromSupabase();
             }
-        }, 25000);
+        }, 20000);
+
+        // Cross-tab real-time synchronization
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'dd_products_v2') {
+                if (this.currentTab === 'products') this.renderProductsTab();
+                if (this.currentTab === 'overview') this.renderOverviewTab();
+            }
+            if (e.key === 'dd_orders_v2') {
+                if (this.currentTab === 'orders') this.renderOrdersTab();
+                if (this.currentTab === 'overview') this.renderOverviewTab();
+                if (this.currentTab === 'customers') this.renderCustomersTab();
+                if (this.currentTab === 'analytics') this.renderAnalyticsTab();
+            }
+        });
 
         // Listen for store events to keep admin reactive
         window.addEventListener('products:updated', () => {
