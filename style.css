@@ -173,21 +173,30 @@ img {
     gap: 14px;
 }
 
-.account-link {
+.account-link,
+#nav-account-btn {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 7px 12px;
+    padding: 7px 14px;
     border-radius: 20px;
     background: transparent;
     color: var(--teal) !important;
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    letter-spacing: 1.5px;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 13.5px !important;
+    letter-spacing: normal !important;
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 600 !important;
     border: 1px solid transparent;
     transition: var(--transition);
+}
+
+.account-link .account-nav-label,
+#nav-account-btn .account-nav-label {
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 13.5px !important;
+    letter-spacing: normal !important;
+    font-weight: 600 !important;
 }
 
 .account-link:hover {
@@ -224,7 +233,10 @@ img {
     border-radius: 30px;
     background-color: transparent;
     color: var(--teal) !important;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 13.5px;
     font-weight: 600;
+    letter-spacing: normal;
 }
 
 .cart-link:hover {
@@ -3339,9 +3351,10 @@ footer {
         height: 46px;
     }
 
-    .cart-link {
+    .cart-link,
+    .account-link {
         padding: 7px 12px;
-        font-size: 10px;
+        font-size: 10px !important;
     }
 
     .wishlist-link {
