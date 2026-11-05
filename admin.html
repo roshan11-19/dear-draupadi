@@ -549,8 +549,12 @@
                 <!-- 6. CATEGORIES / COLLECTIONS TAB -->
                 <div class="admin-tab-pane" id="tab-categories">
                     <div class="table-toolbar">
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="new-category-input" placeholder="New Collection / Category Name" class="form-group" style="padding: 8px 14px; margin: 0; width: 270px;" onkeydown="if(event.key==='Enter') AdminApp.addNewCategory();">
+                        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                            <input type="text" id="new-category-input" placeholder="New Collection / Category Name" class="form-group" style="padding: 8px 14px; margin: 0; width: 260px;" onkeydown="if(event.key==='Enter') AdminApp.addNewCategory();">
+                            <div style="display:flex; align-items:center; gap:8px; background:var(--admin-card); padding:6px 12px; border:1px solid var(--admin-border); border-radius:var(--radius-sm);">
+                                <label for="new-category-color" style="font-size:12px; color:var(--admin-muted); cursor:pointer; margin:0;">Theme Color:</label>
+                                <input type="color" id="new-category-color" value="#315D5A" style="width:28px; height:24px; border:none; padding:0; background:transparent; cursor:pointer;" title="Choose Collection Color">
+                            </div>
                             <button class="btn-admin-primary" onclick="AdminApp.addNewCategory()">+ Add Collection</button>
                         </div>
                     </div>

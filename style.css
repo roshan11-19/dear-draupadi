@@ -577,6 +577,7 @@ img {
     display: grid;
     grid-template-columns: 1.35fr 0.8fr 0.8fr;
     grid-template-rows: 250px 250px;
+    grid-auto-rows: 250px;
     gap: 16px;
 }
 
@@ -590,17 +591,20 @@ img {
     cursor: pointer;
     transition: var(--transition);
     border-radius: var(--radius-sm);
+    background-color: var(--teal);
+    min-height: 250px;
 }
 
 .editorial-card:nth-child(1) {
     grid-row: span 2;
-    background-color: var(--teal);
 }
 
-.editorial-card:nth-child(2) { background-color: var(--coral); }
-.editorial-card:nth-child(3) { background-color: var(--terracotta); }
-.editorial-card:nth-child(4) { background-color: var(--brown); }
-.editorial-card:nth-child(5) { background-color: var(--dark-teal); }
+/* Cyclic background colors for all collections (default 5 + any newly added) */
+.editorial-card:nth-child(5n+1) { background-color: var(--teal); }
+.editorial-card:nth-child(5n+2) { background-color: var(--coral); }
+.editorial-card:nth-child(5n+3) { background-color: var(--terracotta); }
+.editorial-card:nth-child(5n+4) { background-color: var(--brown); }
+.editorial-card:nth-child(5n+5) { background-color: var(--dark-teal); }
 
 .editorial-card::before {
     content: "";
@@ -3084,6 +3088,7 @@ footer {
     .editorial-grid {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: repeat(3, 240px);
+        grid-auto-rows: 240px;
     }
 
     .editorial-card:first-child {

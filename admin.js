@@ -60,7 +60,7 @@ const AdminApp = {
                 if (this.currentTab === 'customers') this.renderCustomersTab();
                 if (this.currentTab === 'analytics') this.renderAnalyticsTab();
             }
-            if (e.key === 'dd_categories_v2' || e.key === 'dd_deleted_categories') {
+            if (e.key === 'dd_categories_v2' || e.key === 'dd_deleted_categories' || e.key === 'dd_category_colors') {
                 if (this.currentTab === 'categories') this.renderCategoriesTab();
                 this.updateCategoryFilterDropdown();
             }
@@ -1647,14 +1647,20 @@ const AdminApp = {
             return;
         }
 
-        listContainer.innerHTML = categories.map(cat => {
+        listContainer.innerHTML = categories.map((cat, idx) => {
             const count = products.filter(p => p.category && p.category.toLowerCase() === cat.toLowerCase()).length;
             const escapedCat = cat.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+            const color = Store.getCategoryColor ? Store.getCategoryColor(cat, idx) : '#315D5A';
             return `
                 <div style="display:flex; justify-content:space-between; align-items:center; background:var(--admin-card); padding:14px 20px; border-radius:var(--radius-sm); border:1px solid var(--admin-border); margin-bottom:10px;">
-                    <div>
-                        <strong style="font-size:14px; color:var(--admin-teal);">${cat}</strong>
-                        <span style="display:block; font-size:11.5px; color:var(--admin-muted);">${count} pieces currently in catalog</span>
+                    <div style="display:flex; align-items:center; gap:14px;">
+                        <input type="color" value="${color}" title="Change theme color for '${escapedCat}'" 
+                               style="width:30px; height:30px; border:none; padding:0; background:transparent; cursor:pointer; border-radius:50%;" 
+                               onchange="AdminApp.updateCategoryColor('${escapedCat}', this.value)">
+                        <div>
+                            <strong style="font-size:14px; color:var(--admin-teal);">${cat}</strong>
+                            <span style="display:block; font-size:11.5px; color:var(--admin-muted);">${count} pieces currently in catalog</span>
+                        </div>
                     </div>
                     <button type="button" class="btn-icon btn-danger" onclick="AdminApp.deleteCategory('${escapedCat}')">Delete</button>
                 </div>
@@ -1664,16 +1670,29 @@ const AdminApp = {
 
     async addNewCategory() {
         const input = document.getElementById('new-category-input');
+        const colorInput = document.getElementById('new-category-color');
         if (!input || !input.value.trim()) return;
 
         const catName = input.value.trim();
-        const success = await Store.addCategory(catName);
+        const catColor = colorInput ? colorInput.value : null;
+        const success = await Store.addCategory(catName, catColor);
         if (success) {
             input.value = '';
+            if (colorInput) {
+                const nextIdx = Store.getCategories().length;
+                colorInput.value = Store.getCategoryColor('', nextIdx);
+            }
             this.renderCategoriesTab();
             this.updateCategoryFilterDropdown();
         } else {
             alert(`Collection/Category "${catName}" already exists or could not be added.`);
+        }
+    },
+
+    updateCategoryColor(catName, color) {
+        if (Store.setCategoryColor) {
+            Store.setCategoryColor(catName, color);
+            this.renderCategoriesTab();
         }
     },
 

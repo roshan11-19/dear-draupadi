@@ -1104,6 +1104,63 @@ const Store = {
     },
 
     // ==================== CATEGORIES ====================
+    getCategoryColors() {
+        const defaultMap = {
+            'flowers': '#315D5A',
+            'jewellery': '#D88D7F',
+            'jewelry': '#D88D7F',
+            'crochet': '#B96F5F',
+            'hampers': '#63442F',
+            'new arrivals': '#274B49',
+            'accessories': '#8A6B55',
+            'bracelets': '#A35848',
+            'rings': '#C7A15A',
+            'earrings': '#4A6B68',
+            'sarees': '#704A33',
+            'clothing': '#5C3C26'
+        };
+        try {
+            const saved = JSON.parse(localStorage.getItem('dd_category_colors') || '{}');
+            return { ...defaultMap, ...saved };
+        } catch (e) {
+            return defaultMap;
+        }
+    },
+
+    getCategoryColor(categoryName, index = 0) {
+        if (!categoryName) {
+            const palette = ['#315D5A', '#D88D7F', '#B96F5F', '#63442F', '#274B49', '#8A6B55', '#C7A15A', '#A35848', '#4A6B68', '#704A33'];
+            return palette[index % palette.length];
+        }
+        const colors = this.getCategoryColors();
+        const lower = categoryName.trim().toLowerCase();
+        if (colors[lower]) return colors[lower];
+
+        const palette = [
+            '#315D5A', // Teal
+            '#D88D7F', // Coral
+            '#B96F5F', // Terracotta
+            '#63442F', // Brown
+            '#274B49', // Dark Teal
+            '#8A6B55', // Soft Brown
+            '#C7A15A', // Gold
+            '#A35848', // Deep Rose
+            '#4A6B68', // Sage Teal
+            '#704A33'  // Warm Walnut
+        ];
+        return palette[index % palette.length];
+    },
+
+    setCategoryColor(categoryName, color) {
+        if (!categoryName || !color) return;
+        try {
+            const saved = JSON.parse(localStorage.getItem('dd_category_colors') || '{}');
+            saved[categoryName.trim().toLowerCase()] = color;
+            localStorage.setItem('dd_category_colors', JSON.stringify(saved));
+            this.emit('categories:updated', this.getCategories());
+        } catch (e) {}
+    },
+
     getCategories() {
         try {
             const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.CATEGORIES));
@@ -1117,7 +1174,7 @@ const Store = {
         }
     },
 
-    async addCategory(categoryName) {
+    async addCategory(categoryName, color) {
         const trimmed = (categoryName || '').trim();
         if (!trimmed) return false;
         let categories = this.getCategories();
@@ -1128,6 +1185,14 @@ const Store = {
         // Add to local list
         categories.push(trimmed);
         localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+
+        // Save custom or auto-cycled theme color
+        const assignedColor = color || this.getCategoryColor(trimmed, categories.length - 1);
+        try {
+            const savedColors = JSON.parse(localStorage.getItem('dd_category_colors') || '{}');
+            savedColors[trimmed.toLowerCase()] = assignedColor;
+            localStorage.setItem('dd_category_colors', JSON.stringify(savedColors));
+        } catch (e) {}
 
         // If it was in the deleted list, remove it
         try {
@@ -1173,6 +1238,13 @@ const Store = {
                 deleted.push(trimmed);
                 localStorage.setItem('dd_deleted_categories', JSON.stringify(deleted));
             }
+        } catch (e) {}
+
+        // Remove customized color if present
+        try {
+            const savedColors = JSON.parse(localStorage.getItem('dd_category_colors') || '{}');
+            delete savedColors[trimmed.toLowerCase()];
+            localStorage.setItem('dd_category_colors', JSON.stringify(savedColors));
         } catch (e) {}
 
         this.emit('categories:updated', categories);

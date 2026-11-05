@@ -90,7 +90,7 @@ const App = {
                 this.renderWishlistDrawer();
                 this.renderProducts();
             }
-            if (e.key === 'dd_categories_v2' || e.key === 'dd_deleted_categories') {
+            if (e.key === 'dd_categories_v2' || e.key === 'dd_deleted_categories' || e.key === 'dd_category_colors') {
                 this.renderCategoryFilters();
                 this.renderEditorialCollections();
             }
@@ -213,9 +213,10 @@ const App = {
             const symbol = symbolMap[lower] || defaultSymbols[idx % defaultSymbols.length];
             const subline = sublineMap[lower] || 'Curated handmade treasures made with love.';
             const numStr = String(idx + 1).padStart(2, '0');
+            const cardBg = Store.getCategoryColor ? Store.getCategoryColor(cat, idx) : 'var(--teal)';
 
             return `
-                <div class="editorial-card" onclick="App.filterCategory('${lower}')">
+                <div class="editorial-card" style="background-color: ${cardBg};" onclick="App.filterCategory('${lower}')">
                     <div class="collection-symbol">${symbol}</div>
                     <div class="editorial-content">
                         <div class="collection-number">${numStr} / COLLECTION</div>
