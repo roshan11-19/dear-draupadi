@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Dear Draupadi Boutique Management Portal</title>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- =====================================================
+         1. ADMIN LOGIN VIEW (SHOWN WHEN NOT AUTHENTICATED)
+    ====================================================== -->
+    <div class="admin-login-view" id="admin-login-view">
+        <div class="login-card">
+            <img src="logo.png" alt="Dear Draupadi Logo" class="login-logo">
+            <h1>Dear Draupadi</h1>
+            <p class="subtitle">Boutique Store Management Portal</p>
+
+            <div id="admin-login-error" style="display:none; color: #A02020; background: rgba(200, 50, 50, 0.1); padding: 10px; border-radius: 4px; font-size: 12px; margin-bottom: 15px;"></div>
+
+            <form class="login-form" id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-email-input">Admin Email</label>
+                    <input type="text" id="admin-email-input" placeholder="admin@deardraupadi.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-password-input">Password</label>
+                    <input type="password" id="admin-password-input" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    SIGN IN TO DASHBOARD →
+                </button>
+            </form>
+
+            <div class="demo-credentials-chip">
+                <strong>Demo Credentials:</strong>
+                <span>Email: <code>admin@deardraupadi.com</code></span>
+                <span>Password: <code>draupadi2026</code></span>
+                <button type="button" class="demo-fill-btn" onclick="AdminApp.fillDemoCredentials()">
+                    ⚡ Quick Demo Login
+                </button>
+            </div>
+
+            <div style="margin-top: 24px; font-size: 12px;">
+                <a href="index.html" style="color: var(--admin-teal); text-decoration: underline;">
+                    ← Return to Dear Draupadi Boutique Store
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         2. ADMIN DASHBOARD APP LAYOUT (AUTHENTICATED)
+    ====================================================== -->
+    <div class="admin-app-layout" id="admin-app-layout">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">
+                <img src="logo.png" alt="Dear Draupadi" class="sidebar-logo">
+                <div>
+                    <div class="sidebar-brand-title">Dear Draupadi</div>
+                    <div class="sidebar-brand-tag">Admin</div>
+                </div>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li>
+                    <button class="nav-tab-btn active" data-tab="overview" onclick="AdminApp.switchTab('overview')">
+                        <span class="tab-icon">📊</span> Overview
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="analytics" onclick="AdminApp.switchTab('analytics')">
+                        <span class="tab-icon">📈</span> Analytics
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="products" onclick="AdminApp.switchTab('products')">
+                        <span class="tab-icon">🌸</span> Products
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="orders" onclick="AdminApp.switchTab('orders')">
+                        <span class="tab-icon">📦</span> Orders
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="customers" onclick="AdminApp.switchTab('customers')">
+                        <span class="tab-icon">👥</span> Customers
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="reviews" onclick="AdminApp.switchTab('reviews')">
+                        <span class="tab-icon">★</span> Reviews
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="categories" onclick="AdminApp.switchTab('categories')">
+                        <span class="tab-icon">🏷️</span> Categories
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="coupons" onclick="AdminApp.switchTab('coupons')">
+                        <span class="tab-icon">✂️</span> Coupons
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="hampers" onclick="AdminApp.switchTab('hampers')">
+                        <span class="tab-icon">🎀</span> Hampers
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-tab-btn" data-tab="settings" onclick="AdminApp.switchTab('settings')">
+                        <span class="tab-icon">⚙️</span> Settings
+                    </button>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="index.html" target="_blank" class="view-store-link">
+                    <span>View Customer Store</span>
+                    <span>↗</span>
+                </a>
+                <button class="logout-btn" onclick="AdminApp.logout()">
+                    <span>🚪</span> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN VIEW -->
+        <main class="admin-main">
+            <!-- TOP HEADER -->
+            <header class="admin-header">
+                <div class="admin-header-title">
+                    <h2 id="admin-header-title-text">Dashboard Overview</h2>
+                </div>
+                <div class="admin-header-actions">
+                    <div class="admin-user-badge">
+                        <div class="user-avatar">D</div>
+                        <span>Draupadi Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB CONTENT AREA -->
+            <div class="admin-content">
+
+                <!-- 1. OVERVIEW TAB -->
+                <div class="admin-tab-pane active" id="tab-overview">
+                    <div class="kpi-grid">
+                        <div class="kpi-card kpi-revenue">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Total Revenue</span>
+                                <span class="kpi-icon">💰</span>
+                            </div>
+                            <div class="kpi-value" id="kpi-total-revenue">₹0</div>
+                            <div class="kpi-sub">Across all customer orders</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Total Orders</span>
+                                <span class="kpi-icon">📦</span>
+                            </div>
+                            <div class="kpi-value" id="kpi-total-orders">0</div>
+                            <div class="kpi-sub">Placed through storefront</div>
+                        </div>
+
+                        <div class="kpi-card kpi-pending">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Pending Orders</span>
+                                <span class="kpi-icon">⏳</span>
+                            </div>
+                            <div class="kpi-value" id="kpi-pending-orders">0</div>
+                            <div class="kpi-sub">Needs packing / dispatch</div>
+                        </div>
+
+                        <div class="kpi-card kpi-stock">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Low Stock Alerts</span>
+                                <span class="kpi-icon">⚠️</span>
+                            </div>
+                            <div class="kpi-value" id="kpi-low-stock">0</div>
+                            <div class="kpi-sub">Pieces with ≤5 inventory</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-visuals-grid">
+                        <!-- Visual Chart Card -->
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <h3>Revenue & Order Inflow</h3>
+                                <span style="font-size: 11.5px; color: var(--admin-muted);">Weekly Flow</span>
+                            </div>
+                            <svg class="revenue-chart-svg" viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="40" y1="150" x2="480" y2="150" stroke="rgba(99, 68, 47, 0.15)" stroke-width="1" />
+                                <line x1="40" y1="100" x2="480" y2="100" stroke="rgba(99, 68, 47, 0.1)" stroke-width="1" stroke-dasharray="4" />
+                                <line x1="40" y1="50" x2="480" y2="50" stroke="rgba(99, 68, 47, 0.1)" stroke-width="1" stroke-dasharray="4" />
+                                
+                                <!-- Bars -->
+                                <rect x="70" y="90" width="36" height="60" rx="4" fill="#315D5A" opacity="0.85"/>
+                                <text x="88" y="168" text-anchor="middle" font-size="10" fill="#8A786D">Mon</text>
+
+                                <rect x="135" y="70" width="36" height="80" rx="4" fill="#315D5A" opacity="0.85"/>
+                                <text x="153" y="168" text-anchor="middle" font-size="10" fill="#8A786D">Tue</text>
+
+                                <rect x="200" y="55" width="36" height="95" rx="4" fill="#C7A15A" opacity="0.9"/>
+                                <text x="218" y="168" text-anchor="middle" font-size="10" fill="#8A786D">Wed</text>
+
+                                <rect x="265" y="40" width="36" height="110" rx="4" fill="#315D5A" opacity="0.85"/>
+                                <text x="283" y="168" text-anchor="middle" font-size="10" fill="#8A786D">Thu</text>
+
+                                <rect x="330" y="30" width="36" height="120" rx="4" fill="#B96F5F" opacity="0.9"/>
+                                <text x="348" y="168" text-anchor="middle" font-size="10" fill="#8A786D">Fri</text>
+
+                                <rect x="395" y="20" width="36" height="130" rx="4" fill="#315D5A"/>
+                                <text x="413" y="168" text-anchor="middle" font-size="10" fill="#8A786D">Today</text>
+                            </svg>
+                        </div>
+
+                        <!-- Top Selling -->
+                        <div class="recent-card">
+                            <div class="chart-card-header">
+                                <h3>Top Treasures</h3>
+                                <span style="font-size: 11.5px; color: var(--admin-muted);">Catalog Highlights</span>
+                            </div>
+                            <div id="overview-top-products">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders Table -->
+                    <div class="admin-data-table-wrap">
+                        <div style="padding: 16px 20px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="font-family: Georgia, serif; font-size: 16px; color: var(--admin-teal); font-weight: normal;">Recent Customer Orders</h3>
+                            <button class="btn-icon" onclick="AdminApp.switchTab('orders')">View All Orders →</button>
+                        </div>
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overview-recent-orders">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                  <!-- 1.5. ANALYTICS & INSIGHTS TAB (DWDM OLAP SUITE) -->
+                <div class="admin-tab-pane" id="tab-analytics">
+                    <div class="analytics-banner">
+                        <div>
+                            <p class="section-label" style="color: var(--admin-terracotta); margin-bottom: 4px;">DWDM / OLAP Multi-Dimensional Analytics</p>
+                            <h2 style="font-family: Georgia, serif; font-size: 22px; color: var(--admin-teal); font-weight: normal;">Boutique Intelligence & Dimensional Data Cube</h2>
+                            <p style="font-size: 12.5px; color: var(--admin-muted); margin-top: 4px;">Interactive multi-dimensional analysis with roll-up and drill-down across Year → Month → Day → Hour time hierarchy and product dimensions.</p>
+                        </div>
+                        <div class="analytics-banner-meta">
+                            <span class="analytics-badge-real">● Live Boutique Data</span>
+                        </div>
+                    </div>
+
+                    <!-- OLAP CONTROLS TOOLBAR -->
+                    <div class="olap-toolbar">
+                        <div class="olap-metrics-group">
+                            <button class="olap-metric-btn active" data-metric="purchases" onclick="AdminApp.switchOlapMetric('purchases')">
+                                <span>📦</span> Purchases
+                            </button>
+                            <button class="olap-metric-btn" data-metric="revenue" onclick="AdminApp.switchOlapMetric('revenue')">
+                                <span>💰</span> Revenue
+                            </button>
+                            <button class="olap-metric-btn" data-metric="registrations" onclick="AdminApp.switchOlapMetric('registrations')">
+                                <span>👥</span> Registrations
+                            </button>
+                            <button class="olap-metric-btn" data-metric="products" onclick="AdminApp.switchOlapMetric('products')">
+                                <span>🌸</span> Products
+                            </button>
+                            <button class="olap-metric-btn" data-metric="categories" onclick="AdminApp.switchOlapMetric('categories')">
+                                <span>🏷️</span> Categories
+                            </button>
+                            <button class="olap-metric-btn" data-metric="materials" onclick="AdminApp.switchOlapMetric('materials')">
+                                <span>✦</span> Materials
+                            </button>
+                        </div>
+
+                        <div class="olap-actions-group">
+                            <button class="btn-icon" onclick="AdminApp.olapExpandAll()" title="Expand all tree branches">
+                                <span>⊞</span> Expand All
+                            </button>
+                            <button class="btn-icon" onclick="AdminApp.olapCollapseAll()" title="Collapse all tree branches">
+                                <span>⊟</span> Collapse All
+                            </button>
+                            <button class="btn-icon" onclick="AdminApp.olapReset()" title="Reset to top level">
+                                <span>↺</span> Reset View
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- INTERACTIVE ROLL-UP BREADCRUMB TRAIL -->
+                    <div class="olap-breadcrumb-bar">
+                        <span class="olap-breadcrumb-label">Roll-Up / Drill-Down Trail:</span>
+                        <div id="olap-breadcrumbs" class="olap-breadcrumbs">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- SCOPE SUMMARY KPIS -->
+                    <div class="olap-scope-bar" id="olap-scope-bar">
+                        <div class="olap-scope-chip">
+                            <span class="chip-label">Active Drill Level</span>
+                            <strong class="chip-val" id="olap-scope-level">Year Level</strong>
+                        </div>
+                        <div class="olap-scope-chip">
+                            <span class="chip-label">Units / Volume in Scope</span>
+                            <strong class="chip-val" id="olap-scope-volume">0</strong>
+                        </div>
+                        <div class="olap-scope-chip">
+                            <span class="chip-label">Monetary Revenue in Scope</span>
+                            <strong class="chip-val" id="olap-scope-revenue">₹0</strong>
+                        </div>
+                        <div class="olap-scope-chip">
+                            <span class="chip-label">Scope Peak / Highlight</span>
+                            <strong class="chip-val" id="olap-scope-peak">—</strong>
+                        </div>
+                    </div>
+
+                    <!-- EMPTY STATE CONTAINER (Hidden when data is present) -->
+                    <div id="olap-empty-state" class="olap-empty-card" style="display: none;">
+                        <span class="empty-icon">♡</span>
+                        <h3>No analytics data available yet.</h3>
+                        <p>Insights will appear here as customers and orders come in.</p>
+                    </div>
+
+                    <!-- MAIN OLAP ANALYTICS CONTENT -->
+                    <div id="olap-main-content">
+                        <!-- 1. SYNCHRONIZED DYNAMIC GRAPH CARD -->
+                        <div class="olap-card olap-graph-card">
+                            <div class="olap-card-header">
+                                <div>
+                                    <h3 id="olap-graph-title">Purchases by Month</h3>
+                                    <span class="chart-subtitle" id="olap-graph-subtitle">Dynamic DWDM visualization • Click any bar to drill down into the next dimensional level</span>
+                                </div>
+                                <div class="olap-graph-hints">
+                                    <span class="graph-hint-badge">💡 Click bar to drill down</span>
+                                    <span class="graph-hint-badge">🔍 Hover for tooltips</span>
+                                </div>
+                            </div>
+                            <div id="olap-dynamic-chart-container" class="olap-dynamic-chart-wrapper">
+                                <!-- Dynamic SVG chart rendered here -->
+                            </div>
+                        </div>
+
+                        <!-- 2. EXPANDABLE / COLLAPSIBLE OLAP MATRIX (TREE TABLE) -->
+                        <div class="olap-card olap-matrix-card">
+                            <div class="olap-card-header">
+                                <div>
+                                    <h3 id="olap-matrix-title">Dimensional Aggregation Matrix</h3>
+                                    <span class="chart-subtitle">Hierarchical OLAP tree table • Parent rows represent exact aggregated sums of all child nodes</span>
+                                </div>
+                                <div class="olap-matrix-controls">
+                                    <span class="matrix-guide-pill">▶ Expand / ▼ Collapse</span>
+                                    <span class="matrix-guide-pill">🎯 Click Row to Drill</span>
+                                </div>
+                            </div>
+                            <div class="olap-matrix-wrapper">
+                                <table class="olap-matrix-table" id="olap-matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 260px;">Hierarchy & Dimension Node</th>
+                                            <th style="min-width: 140px;">Item / Period</th>
+                                            <th style="text-align: right; min-width: 110px;" id="matrix-col-volume">Volume / Qty</th>
+                                            <th style="text-align: right; min-width: 120px;" id="matrix-col-metric">Total Value</th>
+                                            <th style="text-align: right; min-width: 100px;">% of Parent</th>
+                                            <th style="text-align: right; min-width: 100px;">% Grand Total</th>
+                                            <th style="text-align: center; min-width: 100px;">Drill Down</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="olap-matrix-tbody">
+                                        <!-- Rendered dynamically with expandable tree structure -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shared Tooltip Element -->
+                    <div id="analytics-tooltip" class="analytics-tooltip" style="display: none;"></div>
+                </div>
+
+                <!-- 2. PRODUCTS TAB -->
+                <div class="admin-tab-pane" id="tab-products">
+                    <div class="table-toolbar">
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <div class="table-search-box">
+                                <span>🔍</span>
+                                <input type="text" id="admin-product-search" placeholder="Search piece name or category...">
+                            </div>
+
+                            <select id="admin-product-category-filter" class="form-group" style="padding: 8px 12px; margin: 0; width: auto;" onchange="AdminApp.renderProductsTab()">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+
+                        <button class="btn-admin-primary" onclick="AdminApp.openAddProductModal()">
+                            + Add New Product
+                        </button>
+                    </div>
+
+                    <div class="admin-data-table-wrap">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Product Name & ID</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Inventory</th>
+                                    <th>Highlights</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-products-table-body">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. ORDERS TAB -->
+                <div class="admin-tab-pane" id="tab-orders">
+                    <div class="table-toolbar">
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <div class="table-search-box">
+                                <span>🔍</span>
+                                <input type="text" id="admin-order-search" placeholder="Search by Order ID, customer, phone...">
+                            </div>
+
+                            <select id="admin-order-status-filter" class="form-group" style="padding: 8px 12px; margin: 0; width: auto;" onchange="AdminApp.renderOrdersTab()">
+                                <option value="all">All Order Statuses</option>
+                                <option value="Order Placed">Order Placed</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Packed">Packed</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Out for Delivery">Out for Delivery</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+
+                            <button type="button" class="btn-admin-secondary" onclick="AdminApp.syncCloudOrders(this)">
+                                <span id="sync-icon">🔄</span> <span id="sync-text">Sync Cloud Orders</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-data-table-wrap">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer & Phone</th>
+                                    <th>Items & Hamper Details</th>
+                                    <th>Total Amount</th>
+                                    <th>Fulfillment Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-orders-table-body">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Orders Pack of 20 Pagination -->
+                    <div class="product-pagination-wrap" id="admin-orders-pagination-wrap" style="display: none; margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--admin-border); text-align: center;">
+                        <div id="admin-orders-pagination-info" style="font-size: 12.5px; color: var(--admin-muted); margin-bottom: 8px;"></div>
+                        <div id="admin-orders-pagination-controls" class="pagination-controls" style="display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap;"></div>
+                    </div>
+                </div>
+
+                <!-- 4. CUSTOMERS TAB -->
+                <div class="admin-tab-pane" id="tab-customers">
+                    <div class="table-toolbar">
+                        <p style="font-size: 13px; color: var(--admin-muted);">Directory of customers who placed orders through Dear Draupadi.</p>
+                    </div>
+
+                    <div class="admin-data-table-wrap">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Location</th>
+                                    <th>Orders Placed</th>
+                                    <th>Total Spent</th>
+                                    <th>Latest Order</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-customers-table-body">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Customers Pack of 20 Pagination -->
+                    <div class="product-pagination-wrap" id="admin-customers-pagination-wrap" style="display: none; margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--admin-border); text-align: center;">
+                        <div id="admin-customers-pagination-info" style="font-size: 12.5px; color: var(--admin-muted); margin-bottom: 8px;"></div>
+                        <div id="admin-customers-pagination-controls" class="pagination-controls" style="display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap;"></div>
+                    </div>
+                </div>
+
+                <!-- 5. REVIEWS TAB -->
+                <div class="admin-tab-pane" id="tab-reviews">
+                    <div class="table-toolbar">
+                        <p style="font-size: 13px; color: var(--admin-muted);">Moderate customer ratings and review submissions.</p>
+                    </div>
+
+                    <div class="admin-data-table-wrap">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Rating</th>
+                                    <th>Comment</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-reviews-table-body">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 6. CATEGORIES TAB -->
+                <div class="admin-tab-pane" id="tab-categories">
+                    <div class="table-toolbar">
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="new-category-input" placeholder="New Category Name" class="form-group" style="padding: 8px 14px; margin: 0; width: 250px;" onkeydown="if(event.key==='Enter') AdminApp.addNewCategory();">
+                            <button class="btn-admin-primary" onclick="AdminApp.addNewCategory()">+ Add Category</button>
+                        </div>
+                    </div>
+
+                    <div id="admin-categories-list">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- 7. COUPONS TAB -->
+                <div class="admin-tab-pane" id="tab-coupons">
+                    <div class="table-toolbar">
+                        <p style="font-size: 13px; color: var(--admin-muted);">Manage boutique promo codes and promotional discounts.</p>
+                        <button class="btn-admin-primary" onclick="AdminApp.openAddCouponModal()">+ Create Coupon</button>
+                    </div>
+
+                    <div class="admin-data-table-wrap">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Coupon Code</th>
+                                    <th>Discount</th>
+                                    <th>Min. Spend</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-coupons-table-body">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 8. HAMPERS TAB -->
+                <div class="admin-tab-pane" id="tab-hampers">
+                    <div class="tab-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <div>
+                            <h2>Suggested & Preset Hampers</h2>
+                            <p class="tab-sub" style="color:var(--admin-muted); font-size:13px;">Manage boutique hamper curations and bundle presets</p>
+                        </div>
+                        <button class="btn-admin-primary" onclick="AdminApp.openAddHamperModal()">
+                            + Create Suggested Hamper
+                        </button>
+                    </div>
+
+                    <div class="admin-card table-card">
+                        <table class="admin-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Hamper</th>
+                                    <th>Price</th>
+                                    <th>Original Price</th>
+                                    <th>Included Products</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-hampers-table-body">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 9. SETTINGS TAB -->
+                <div class="admin-tab-pane" id="tab-settings">
+                    <div class="chart-card" style="max-width: 600px; margin-bottom: 24px;">
+                        <h3 style="margin-bottom: 12px;">Boutique Store Configuration</h3>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label>Store Name</label>
+                            <input type="text" value="Dear Draupadi" readonly>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label>Store Currency</label>
+                            <input type="text" value="INR (₹)" readonly>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label>Delivery Rule</label>
+                            <input type="text" value="Complimentary Free Delivery on all orders" readonly>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- =====================================================
+         ADMIN MODALS
+    ====================================================== -->
+
+    <!-- ADD / EDIT PRODUCT MODAL -->
+    <div class="admin-modal-overlay" id="admin-product-modal">
+        <div class="admin-modal">
+            <div class="admin-modal-header">
+                <h3 id="product-modal-title">Product Details</h3>
+                <button class="admin-modal-close" onclick="AdminApp.closeProductModal()">×</button>
+            </div>
+            <form id="admin-product-form" onsubmit="AdminApp.saveProductForm(event)">
+                <div class="admin-modal-body">
+                    <div class="form-group">
+                        <label>Product Name *</label>
+                        <input type="text" id="prod-name-input" placeholder="e.g. Handmade Velvet Rose" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select id="prod-category-select" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Symbol / Emoji Icon</label>
+                            <input type="text" id="prod-symbol-input" placeholder="🌸" maxlength="4">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Selling Price (₹) *</label>
+                            <input type="number" id="prod-price-input" placeholder="199" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Original Price (₹)</label>
+                            <input type="number" id="prod-orig-price-input" placeholder="249">
+                        </div>
+                        <div class="form-group">
+                            <label>Stock Count *</label>
+                            <input type="number" id="prod-stock-input" placeholder="15" required min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Badge Tag (e.g. NEW, BESTSELLER, HANDMADE)</label>
+                        <input type="text" id="prod-badge-input" placeholder="NEW">
+                    </div>
+
+                    <!-- PRODUCT IMAGES UPLOAD SECTION -->
+                    <div class="form-group product-images-upload-section">
+                        <div class="upload-section-header" style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+                            <label style="font-weight:600;">Product Images *</label>
+                            <span class="upload-hint" style="font-size:11.5px; color:var(--admin-muted);">JPG, PNG, or WEBP (Max 5MB). First image is Primary.</span>
+                        </div>
+
+                        <!-- Native File Picker & Dropzone -->
+                        <div class="image-dropzone" id="product-image-dropzone" 
+                             ondragover="AdminApp.handleDragOver(event)" 
+                             ondragleave="AdminApp.handleDragLeave(event)" 
+                             ondrop="AdminApp.handleDrop(event)"
+                             onclick="document.getElementById('prod-file-picker').click()">
+                            <input type="file" id="prod-file-picker" multiple accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="AdminApp.handleFileSelect(event)">
+                            <div class="dropzone-content">
+                                <span class="dropzone-icon" style="font-size:28px;">📷</span>
+                                <div class="dropzone-text">
+                                    <strong>Click to select images</strong> or drag & drop files here
+                                </div>
+                                <button type="button" class="btn-browse-files" onclick="event.stopPropagation(); document.getElementById('prod-file-picker').click()">
+                                    Upload Images
+                                </button>
+                                <span class="dropzone-sub">Uploads to Supabase Storage bucket <code>product-images</code></span>
+                            </div>
+                        </div>
+
+                        <!-- Upload Alert / Status Notice -->
+                        <div id="image-upload-alert" class="image-upload-alert" style="display:none;"></div>
+
+                        <!-- Image Preview Grid -->
+                        <div class="image-preview-grid" id="modal-image-preview-grid">
+                            <!-- Injected dynamically by AdminApp -->
+                        </div>
+
+                        <!-- Optional Collapsible Manual URL Add -->
+                        <details class="manual-url-details" style="margin-top:10px; font-size:12px; color:var(--admin-muted);">
+                            <summary style="cursor:pointer; user-select:none;">+ Add image via URL (optional)</summary>
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <input type="url" id="prod-manual-url-input" placeholder="https://images.unsplash.com/..." style="flex:1;">
+                                <button type="button" class="btn-admin-secondary" style="padding:6px 14px; font-size:12px;" onclick="AdminApp.addManualImageUrl()">Add</button>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="prod-desc-input" rows="3" placeholder="Tell the charming story behind this piece..."></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Materials</label>
+                            <input type="text" id="prod-materials-input" placeholder="e.g. Natural Pearls, 18k Gold Plated">
+                        </div>
+                        <div class="form-group">
+                            <label>Size & Dimensions</label>
+                            <input type="text" id="prod-size-input" placeholder="e.g. 16 inches length">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Care Instructions</label>
+                        <input type="text" id="prod-care-input" placeholder="e.g. Wipe with dry cloth after wear">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Search Tags (comma separated)</label>
+                        <input type="text" id="prod-tags-input" placeholder="flower, handmade, decor, gift">
+                    </div>
+
+                    <div style="display: flex; gap: 20px; padding: 10px 0;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                            <input type="checkbox" id="prod-featured-check"> Featured Piece
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                            <input type="checkbox" id="prod-new-check"> New Arrival
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                            <input type="checkbox" id="prod-bestseller-check"> Bestseller
+                        </label>
+                    </div>
+                </div>
+
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn-admin-cancel" onclick="AdminApp.closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn-admin-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ORDER DETAILS MODAL -->
+    <div class="admin-modal-overlay" id="admin-order-modal">
+        <div class="admin-modal">
+            <div class="admin-modal-header">
+                <h3>Order Information</h3>
+                <button class="admin-modal-close" onclick="AdminApp.closeOrderModal()">×</button>
+            </div>
+            <div class="admin-modal-body" id="order-detail-modal-body">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn-admin-primary" onclick="AdminApp.closeOrderModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD COUPON MODAL -->
+    <div class="admin-modal-overlay" id="admin-coupon-modal">
+        <div class="admin-modal" style="max-width: 480px;">
+            <div class="admin-modal-header">
+                <h3>Create New Coupon</h3>
+                <button class="admin-modal-close" onclick="AdminApp.closeCouponModal()">×</button>
+            </div>
+            <form id="admin-coupon-form" onsubmit="AdminApp.saveCouponForm(event)">
+                <div class="admin-modal-body">
+                    <div class="form-group">
+                        <label>Coupon Code *</label>
+                        <input type="text" id="cpn-code-input" placeholder="e.g. DIWALI20" required style="text-transform: uppercase;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="cpn-type-select">
+                                <option value="percentage">Percentage (%) Off</option>
+                                <option value="fixed">Flat (₹) Off</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Value *</label>
+                            <input type="number" id="cpn-value-input" placeholder="15" required min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Minimum Spend (₹)</label>
+                        <input type="number" id="cpn-minspend-input" placeholder="299" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="cpn-desc-input" placeholder="e.g. 15% off on orders above ₹299">
+                    </div>
+                </div>
+
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn-admin-cancel" onclick="AdminApp.closeCouponModal()">Cancel</button>
+                    <button type="submit" class="btn-admin-primary">Create Coupon</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT HAMPER PRESET MODAL -->
+    <div class="admin-modal-overlay" id="admin-hamper-modal">
+        <div class="admin-modal" style="max-width: 650px;">
+            <div class="admin-modal-header">
+                <h3 id="hamper-modal-title">Create Suggested Hamper</h3>
+                <button class="admin-modal-close" onclick="AdminApp.closeHamperModal()">×</button>
+            </div>
+            <form id="admin-hamper-form" onsubmit="AdminApp.saveHamperForm(event)">
+                <div class="admin-modal-body">
+                    <div class="form-group">
+                        <label>Hamper Name *</label>
+                        <input type="text" id="hamper-name-input" placeholder="e.g. Birthday Celebration Mini Hamper" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Selling Price (₹) *</label>
+                            <input type="number" id="hamper-price-input" placeholder="799" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Original / Value Price (₹)</label>
+                            <input type="number" id="hamper-orig-price-input" placeholder="999">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hamper Image URL</label>
+                        <input type="text" id="hamper-image-input" placeholder="https://images.unsplash.com/...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="hamper-desc-input" rows="2" placeholder="Tell the charming story and occasion for this boutique hamper curation..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Included Products (Select real products from catalog)</label>
+                        <div id="hamper-included-products-picker" class="hamper-product-picker-container" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--admin-border); border-radius: 6px; padding: 10px; background: var(--admin-surface);">
+                            <!-- Populated dynamically by AdminApp with real products -->
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 24px; align-items: center; margin-top: 12px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="hamper-active-check" checked>
+                            <span>Active (Visible on Storefront)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="hamper-featured-check" checked>
+                            <span>Featured Hamper</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn-admin-cancel" onclick="AdminApp.closeHamperModal()">Cancel</button>
+                    <button type="submit" class="btn-admin-primary">Save Hamper</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="env.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="store.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear Draupadi — Little things, made with love ♡</title>
+    
+    <!-- Meta & Branding -->
+    <meta name="description" content="Dear Draupadi is an artisanal boutique offering handmade blooms, delicate pearl jewellery, crochet treasures, and thoughtful gift hampers.">
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- =====================================================
+         ANNOUNCEMENT BAR
+    ====================================================== -->
+    <aside class="announcement-bar">
+        <div class="announcement-text">
+            Complimentary Handcrafted Gift Packaging on all boutique orders ♡
+        </div>
+        <div class="announcement-links">
+            <a href="javascript:void(0)" onclick="App.openOffersModal()">OFFERS 🏷️</a>
+            <a href="javascript:void(0)" onclick="App.openAuthOrAccount()" id="announcement-account-link">ACCOUNT / SIGN IN</a>
+            <a href="javascript:void(0)" onclick="App.openMyOrders()">MY ORDERS</a>
+            <a href="#about">OUR STORY</a>
+        </div>
+    </aside>
+
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
+    <header class="navbar">
+        <div class="nav-brand-wrap">
+            <button class="mobile-toggle" aria-label="Open navigation menu" onclick="App.toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <a href="#" aria-label="Dear Draupadi Home">
+                <img src="logo.png" alt="Dear Draupadi Logo" class="nav-logo">
+            </a>
+        </div>
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#">HOME</a></li>
+                <li><a href="#collections">COLLECTIONS</a></li>
+                <li><a href="#products">SHOP</a></li>
+                <li><a href="javascript:void(0)" onclick="App.openOffersModal()" style="color: var(--terracotta); font-weight: 700;">OFFERS 🏷️</a></li>
+                <li><a href="#about">ABOUT</a></li>
+                <li><a href="#contact">CONTACT</a></li>
+                <li>
+                    <button class="nav-action-btn" onclick="App.openSearch()" aria-label="Search treasures">
+                        ⌕ SEARCH
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="nav-actions">
+            <button class="nav-action-btn account-link" id="nav-account-btn" onclick="App.openAuthOrAccount()" aria-label="Customer Account" title="My Account">
+                <span class="account-nav-icon">👤</span>
+                <span class="account-nav-label">ACCOUNT</span>
+            </button>
+            <button class="nav-action-btn wishlist-link" onclick="App.openWishlist()" aria-label="Open wishlist" title="Wishlist">
+                <span class="wishlist-nav-symbol">♡</span>
+                <span class="wishlist-count-badge" style="display: none;">0</span>
+            </button>
+            <button class="cart-link" onclick="App.openCart()" aria-label="Open cart" title="Cart">
+                <svg class="cart-nav-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg> CART<span class="cart-count-badge" style="display: none;">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- =====================================================
+         MOBILE DRAWER NAVIGATION
+    ====================================================== -->
+    <div class="mobile-drawer-overlay" id="mobile-drawer-overlay" onclick="App.closeMobileNav()"></div>
+    <aside class="mobile-nav-drawer" id="mobile-nav-drawer">
+        <div class="mobile-drawer-header">
+            <img src="logo.png" alt="Dear Draupadi" class="mobile-drawer-logo">
+            <button class="mobile-drawer-close" onclick="App.closeMobileNav()" aria-label="Close menu">×</button>
+        </div>
+        <ul class="mobile-drawer-links">
+            <li><a href="#" onclick="App.closeMobileNav()">Home</a></li>
+            <li><a href="#collections" onclick="App.closeMobileNav()">Collections</a></li>
+            <li><a href="#products" onclick="App.closeMobileNav()">All Treasures</a></li>
+            <li>
+                <button onclick="App.closeMobileNav(); App.openOffersModal();" style="color: var(--terracotta); font-weight: bold;">
+                    Offers & Coupons <span>🏷️</span>
+                </button>
+            </li>
+            <li><a href="#about" onclick="App.closeMobileNav()">Our Story</a></li>
+            <li><a href="#contact" onclick="App.closeMobileNav()">Instagram</a></li>
+            <li>
+                <button onclick="App.closeMobileNav(); App.openSearch();">
+                    Search Treasures <span>⌕</span>
+                </button>
+            </li>
+            <li>
+                <button onclick="App.closeMobileNav(); App.openAuthOrAccount();" id="mobile-account-btn">
+                    My Account <span id="mobile-account-badge">👤</span>
+                </button>
+            </li>
+            <li>
+                <button onclick="App.closeMobileNav(); App.openWishlist();">
+                    Wishlist <span class="wishlist-count-badge" style="display: none;">0</span><span>♡</span>
+                </button>
+            </li>
+            <li>
+                <button onclick="App.closeMobileNav(); App.openCart();">
+                    Cart <span class="cart-count-badge" style="display: none;">0</span><span>🛍</span>
+                </button>
+            </li>
+            <li>
+                <button onclick="App.closeMobileNav(); App.openMyOrders();">
+                    My Orders <span>📦</span>
+                </button>
+            </li>
+        </ul>
+        <div class="mobile-drawer-footer">
+            <p>© 2026 Dear Draupadi</p>
+            <p style="margin-top: 4px; color: var(--terracotta);">Handmade with love ♡</p>
+        </div>
+    </aside>
+
+    <!-- =====================================================
+         HERO SECTION
+    ====================================================== -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="eyebrow">
+                <span>❀</span> Welcome to Dear Draupadi
+            </p>
+            <h1>
+                Little things,
+                <br>
+                <span>made with love.</span>
+            </h1>
+            <p class="hero-description">
+                Pretty little things, thoughtful gifts and handmade creations — chosen to bring a little more joy into your everyday moments.
+            </p>
+            <div class="hero-buttons">
+                <a href="#collections" class="shop-button hero-cta-brown">
+                    EXPLORE OUR COLLECTION →
+                </a>
+                <a href="#about" class="secondary-button">
+                    OUR STORY ❀
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-art">
+            <div class="hero-logo-frame">
+                <img src="logo.png" alt="Dear Draupadi Brand Illustration" class="hero-logo">
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         DECORATIVE DIVIDER
+    ====================================================== -->
+    <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-symbol">❀</div>
+        <div class="divider-line"></div>
+    </div>
+
+    <!-- =====================================================
+         COLLECTIONS SECTION
+    ====================================================== -->
+    <section class="editorial-collections" id="collections">
+        <div class="editorial-heading">
+            <div>
+                <p class="section-label">Discover</p>
+                <h2>
+                    Explore our
+                    <br>
+                    little world.
+                </h2>
+            </div>
+            <p class="editorial-description">
+                Thoughtfully chosen pieces, handmade details and little things that make ordinary moments feel special.
+            </p>
+        </div>
+
+        <div class="editorial-grid">
+            <!-- 01 FLOWERS -->
+            <div class="editorial-card" onclick="App.filterCategory('flowers')">
+                <div class="collection-symbol">❀</div>
+                <div class="editorial-content">
+                    <div class="collection-number">01 / COLLECTION</div>
+                    <h3>Flowers</h3>
+                    <p>Handmade blooms that never fade.</p>
+                    <span class="collection-link">EXPLORE →</span>
+                </div>
+            </div>
+
+            <!-- 02 JEWELLERY -->
+            <div class="editorial-card" onclick="App.filterCategory('jewellery')">
+                <div class="collection-symbol">✦</div>
+                <div class="editorial-content">
+                    <div class="collection-number">02 / COLLECTION</div>
+                    <h3>Jewellery</h3>
+                    <p>Little pieces to treasure.</p>
+                    <span class="collection-link">EXPLORE →</span>
+                </div>
+            </div>
+
+            <!-- 03 CROCHET -->
+            <div class="editorial-card" onclick="App.filterCategory('crochet')">
+                <div class="collection-symbol">♡</div>
+                <div class="editorial-content">
+                    <div class="collection-number">03 / COLLECTION</div>
+                    <h3>Crochet</h3>
+                    <p>Made slowly, made with love.</p>
+                    <span class="collection-link">EXPLORE →</span>
+                </div>
+            </div>
+
+            <!-- 04 HAMPERS -->
+            <div class="editorial-card" onclick="App.filterCategory('hampers')">
+                <div class="collection-symbol">✿</div>
+                <div class="editorial-content">
+                    <div class="collection-number">04 / COLLECTION</div>
+                    <h3>Hampers</h3>
+                    <p>Gifts made for someone special.</p>
+                    <span class="collection-link">EXPLORE →</span>
+                </div>
+            </div>
+
+            <!-- 05 NEW ARRIVALS -->
+            <div class="editorial-card" onclick="App.filterCategory('new arrivals')">
+                <div class="collection-symbol">✧</div>
+                <div class="editorial-content">
+                    <div class="collection-number">05 / COLLECTION</div>
+                    <h3>New Arrivals</h3>
+                    <p>Something new has arrived.</p>
+                    <span class="collection-link">DISCOVER →</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         HAMPER PROMOTIONAL BANNER
+    ====================================================== -->
+    <section class="hamper-promo-section">
+        <div class="hamper-promo-poster" onclick="App.openHampersCollection()">
+            <div class="hamper-promo-content">
+                <span class="hamper-promo-tag">BESPOKE GIFTING</span>
+                <h2 class="hamper-promo-title">Build Your Own Hamper</h2>
+                <p class="hamper-promo-subtitle">Pick your favourites. We'll turn them into a hamper made for you.</p>
+                <button type="button" class="hamper-promo-cta-btn" onclick="event.stopPropagation(); App.openHampersCollection()">
+                    Customize Now →
+                </button>
+            </div>
+            <div class="hamper-promo-art">
+                <span class="hamper-promo-emblem">🎀</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         PRODUCTS SECTION
+    ====================================================== -->
+    <section class="products" id="products">
+        <div class="products-heading">
+            <div>
+                <p class="section-label">Our favourites</p>
+                <h2>Little treasures</h2>
+            </div>
+            <p class="products-intro">
+                A few lovely things waiting to find their new home.
+            </p>
+        </div>
+
+        <!-- PRODUCT TOOLBAR -->
+        <div class="products-toolbar">
+            <div class="product-filters">
+                <button class="filter-button active" onclick="App.filterCategory('all', this)">ALL</button>
+                <button class="filter-button" onclick="App.filterCategory('jewellery', this)">JEWELLERY</button>
+                <button class="filter-button" onclick="App.filterCategory('flowers', this)">FLOWERS</button>
+                <button class="filter-button" onclick="App.filterCategory('bracelets', this)">BRACELETS</button>
+                <button class="filter-button" onclick="App.filterCategory('crochet', this)">CROCHET</button>
+                <button class="filter-button" onclick="App.filterCategory('hampers', this)">HAMPERS</button>
+                <button class="filter-button" onclick="App.filterCategory('accessories', this)">ACCESSORIES</button>
+            </div>
+
+            <div class="product-sort-wrap">
+                <label for="product-sort">Sort by:</label>
+                <select id="product-sort" class="sort-select">
+                    <option value="featured">Featured</option>
+                    <option value="newest">Newest Arrivals</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- DYNAMIC PRODUCT GRID -->
+        <div class="product-grid" id="product-grid">
+            <!-- Rendered by app.js from Store in packs of 50 -->
+        </div>
+
+        <!-- Product Pagination Controls -->
+        <div class="product-pagination-wrap" id="product-pagination-wrap" style="display: none;">
+            <div id="product-pagination-info"></div>
+            <div id="product-pagination-controls" class="pagination-controls"></div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         ABOUT / BRAND STORY
+    ====================================================== -->
+    <section class="story" id="about">
+        <div class="story-art">
+            <img src="logo.png" alt="Dear Draupadi Brand Crest" class="story-logo">
+        </div>
+
+        <div class="story-content">
+            <p class="section-label">A little about us</p>
+            <h2>
+                Made for the
+                <br>
+                little joys in life.
+            </h2>
+            <p>
+                Dear Draupadi is a warm boutique space filled with pretty things, thoughtful gifts, and pieces crafted with love and patience.
+            </p>
+            <p>
+                From handmade everlasting blossoms and delicate freshwater pearls to hand-knitted crochet creations and curated gift hampers, everything here is meant to make your everyday moments a little more meaningful.
+            </p>
+            <a href="#products" class="story-button">
+                SHOP THE BOUTIQUE →
+            </a>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         INSTAGRAM / SOCIAL
+    ====================================================== -->
+    <section class="instagram" id="contact">
+        <p class="section-label">Follow our little world</p>
+        <h2>@deardraupadi</h2>
+        <p class="instagram-text">
+            Pretty things · little moments · lots of love ♡
+        </p>
+
+        <div class="instagram-grid">
+            <div class="instagram-box" onclick="App.filterCategory('flowers')">
+                <span class="insta-emoji">🌸</span>
+                <p>Everlasting Blooms</p>
+            </div>
+            <div class="instagram-box" onclick="App.filterCategory('jewellery')">
+                <span class="insta-emoji">✨</span>
+                <p>Freshwater Pearls</p>
+            </div>
+            <div class="instagram-box" onclick="App.filterCategory('hampers')">
+                <span class="insta-emoji">🎀</span>
+                <p>Curated Hampers</p>
+            </div>
+            <div class="instagram-box" onclick="App.filterCategory('crochet')">
+                <span class="insta-emoji">🌼</span>
+                <p>Hand-Knitted Crochet</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+    <footer>
+        <div class="footer-main">
+            <div class="footer-brand">
+                <img src="logo.png" alt="Dear Draupadi Logo" class="footer-logo">
+                <p>
+                    Pretty little things, thoughtful gifts, and handmade happiness. Curated with love for life's sweetest moments.
+                </p>
+            </div>
+
+            <div class="footer-column">
+                <h4>SHOP</h4>
+                <a href="#products" onclick="App.filterCategory('flowers')">Flowers</a>
+                <a href="#products" onclick="App.filterCategory('jewellery')">Jewellery</a>
+                <a href="#products" onclick="App.filterCategory('crochet')">Crochet</a>
+                <a href="#products" onclick="App.filterCategory('hampers')">Hampers</a>
+                <a href="#products" onclick="App.filterCategory('accessories')">Accessories</a>
+            </div>
+
+            <div class="footer-column">
+                <h4>HELP & CARE</h4>
+                <button onclick="App.openMyOrders()">My Orders</button>
+                <a href="#about">Our Story</a>
+                <a href="#contact">Instagram Community</a>
+                <a href="admin.html" style="opacity: 0.4; font-size: 11px; margin-top: 15px;">Admin Portal ↗</a>
+            </div>
+
+            <div class="footer-column footer-newsletter">
+                <h4>NEWSLETTER</h4>
+                <p>Subscribe to receive gentle notes on new arrivals & secret boutique drops ♡</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); App.showToast('Thank you for subscribing to our gentle notes ♡'); this.reset();">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">JOIN</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Dear Draupadi · Made with ♡</span>
+            <span>Handmade in India</span>
+        </div>
+    </footer>
+
+    <!-- =====================================================
+         SEARCH OVERLAY
+    ====================================================== -->
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-panel">
+            <button class="search-close" type="button" onclick="App.closeSearch()" aria-label="Close search">×</button>
+            <div class="search-heading">
+                <p class="section-label">DEAR DRAUPADI</p>
+                <h2>Find your little something.</h2>
+                <p style="font-family: Arial, sans-serif; font-size: 12px; color: var(--soft-brown); margin-top: 8px;">
+                    Search through our little treasures ♡
+                </p>
+            </div>
+
+            <div class="search-input-wrap">
+                <span>⌕</span>
+                <input type="text" id="product-search" placeholder="Search flowers, jewellery, crochet, hampers..." autocomplete="off">
+            </div>
+
+            <div class="search-results" id="search-results">
+                <p class="search-hint">Start typing to find something lovely...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         CART DRAWER
+    ====================================================== -->
+    <div class="cart-overlay" id="cart-overlay" onclick="App.closeCart(); App.closeWishlist();"></div>
+    <aside class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <div>
+                <p class="section-label" style="margin-bottom: 4px;">Your little treasures</p>
+                <h2>Your Cart</h2>
+            </div>
+            <button class="close-cart" onclick="App.closeCart()" aria-label="Close cart">×</button>
+        </div>
+
+        <div class="cart-items" id="cart-items">
+            <!-- Dynamically populated -->
+        </div>
+
+        <div class="empty-cart" id="empty-cart">
+            <div class="empty-cart-symbol">♡</div>
+            <h3>Your cart is empty</h3>
+            <p>Looks like you haven't picked your little treasures yet.</p>
+            <button onclick="App.closeCart(); document.getElementById('products').scrollIntoView();" class="continue-shopping">
+                CONTINUE SHOPPING
+            </button>
+        </div>
+
+        <div class="cart-footer" id="cart-footer">
+            <!-- Apply Coupon Option & Offers Dropdown -->
+            <div class="cart-coupon-section" id="cart-coupon-section">
+                <div id="applied-coupon-wrap"></div>
+                <button type="button" class="cart-coupon-toggle-btn" id="cart-coupon-toggle-btn" onclick="App.toggleCartCouponDropdown()">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 15px;">🎟️</span>
+                        <span id="cart-coupon-toggle-label" style="font-weight: 600; font-size: 12px; color: var(--brown);">Apply Coupon / Offers</span>
+                    </div>
+                    <span class="coupon-dropdown-arrow" id="cart-coupon-arrow" style="font-size: 11px; transition: transform 0.2s;">▼</span>
+                </button>
+                <div class="cart-coupon-dropdown" id="cart-coupon-dropdown" style="display: none;">
+                    <div class="cart-coupon-box" style="margin-bottom: 8px;">
+                        <input type="text" id="coupon-code-input" placeholder="ENTER COUPON CODE" style="text-transform: uppercase;">
+                        <button type="button" onclick="App.applyCouponCode()">APPLY</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 6px;">
+                        <span style="font-size: 10.5px; font-weight: 700; color: var(--terracotta); text-transform: uppercase; letter-spacing: 0.5px;">AVAILABLE OFFERS</span>
+                    </div>
+                    <div id="cart-offers-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;">
+                        <!-- Injected dynamically with eligibility check -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="cart-total-row">
+                <span>Subtotal</span>
+                <strong id="cart-subtotal" style="color: var(--brown);">₹0</strong>
+            </div>
+
+            <div class="cart-total-row">
+                <span>Boutique Delivery</span>
+                <span style="color: var(--teal); font-weight: bold;">FREE</span>
+            </div>
+
+            <div class="cart-total-final">
+                <span>Total</span>
+                <strong id="cart-total">₹0</strong>
+            </div>
+
+            <button class="checkout-button" onclick="App.openCheckout()">
+                PROCEED TO CHECKOUT →
+            </button>
+
+            <p class="cart-note">Handmade with love ♡</p>
+        </div>
+    </aside>
+
+    <!-- =====================================================
+         WISHLIST DRAWER
+    ====================================================== -->
+    <aside class="wishlist-drawer" id="wishlist-drawer">
+        <div class="cart-header">
+            <div>
+                <p class="section-label" style="margin-bottom: 4px;">Saved with love</p>
+                <h2>Your Wishlist</h2>
+            </div>
+            <button class="close-wishlist" onclick="App.closeWishlist()" aria-label="Close wishlist">×</button>
+        </div>
+
+        <!-- Wishlist Category Filter Bar -->
+        <div id="wishlist-category-filters" class="wishlist-category-filters" style="display: none;">
+            <!-- Category buttons injected dynamically -->
+        </div>
+
+        <div class="wishlist-items" id="wishlist-items">
+            <!-- Dynamically populated -->
+        </div>
+
+        <div class="empty-wishlist" id="empty-wishlist">
+            <div class="empty-cart-symbol">♡</div>
+            <h3>Your wishlist is empty</h3>
+            <p>Save your favourite pieces by tapping the heart icon on any product.</p>
+            <button onclick="App.closeWishlist(); document.getElementById('products').scrollIntoView();" class="continue-shopping">
+                EXPLORE PIECES
+            </button>
+        </div>
+    </aside>
+
+    <!-- =====================================================
+         PRODUCT DETAILS MODAL
+    ====================================================== -->
+    <div class="product-modal-overlay" id="product-modal-overlay" onclick="if(event.target===this) App.closeProductModal();">
+        <div class="product-modal">
+            <button class="product-modal-close" onclick="App.closeProductModal()" aria-label="Close modal">×</button>
+
+            <!-- Gallery -->
+            <div class="product-modal-gallery">
+                <div class="modal-main-image-wrap" id="modal-main-image-wrap">
+                    <!-- Main image or placeholder emoji -->
+                </div>
+                <div class="modal-thumbnails" id="modal-thumbnails">
+                    <!-- Thumbnails list -->
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="product-modal-content">
+                <p class="product-modal-category" id="modal-product-category">CATEGORY</p>
+                <h2 id="modal-product-name">Product Name</h2>
+                
+                <div class="product-modal-rating-row">
+                    <span id="modal-rating-score">★ 5.0 (0 reviews)</span>
+                    <span>•</span>
+                    <span id="modal-stock-badge" class="product-stock-badge">In Stock</span>
+                </div>
+
+                <div class="product-modal-prices">
+                    <span class="product-modal-price" id="modal-product-price">₹0</span>
+                    <span class="product-modal-original-price" id="modal-product-original-price"></span>
+                </div>
+
+                <p class="product-modal-description" id="modal-product-description">
+                    Handmade item description.
+                </p>
+
+                <!-- Spec details -->
+                <div class="modal-specs-accordion">
+                    <div class="spec-item"><strong>Materials:</strong> <span id="modal-materials-text"></span></div>
+                    <div class="spec-item"><strong>Size & Fit:</strong> <span id="modal-size-text"></span></div>
+                    <div class="spec-item"><strong>Care:</strong> <span id="modal-care-text"></span></div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="modal-quantity-row">
+                    <span>Quantity</span>
+                    <div class="modal-quantity-controls">
+                        <button onclick="App.changeModalQuantity(-1)">−</button>
+                        <span id="modal-quantity">1</span>
+                        <button onclick="App.changeModalQuantity(1)">+</button>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="modal-actions">
+                    <div class="modal-btn-row">
+                        <button class="modal-add-button" onclick="App.addModalProductToCart()">ADD TO CART →</button>
+                        <button class="modal-buy-now-button" onclick="App.buyNowModalProduct()">BUY NOW ♡</button>
+                    </div>
+                    <button class="modal-wishlist-toggle" id="modal-wishlist-btn" onclick="App.toggleModalWishlist()">
+                        ♡ ADD TO WISHLIST
+                    </button>
+                    <button class="modal-wishlist-toggle" onclick="App.shareProduct()" style="border:none; text-decoration:underline;">
+                        Share this treasure ↗
+                    </button>
+                </div>
+
+                <!-- Reviews -->
+                <div class="modal-reviews-section">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <h4>Customer Reviews</h4>
+                        <button class="add-review-toggle" onclick="App.toggleReviewForm()">+ Write a Review</button>
+                    </div>
+
+                    <!-- Review Form -->
+                    <form id="modal-review-form" class="review-form-wrap" onsubmit="App.submitProductReview(event)">
+                        <input type="text" id="review-author-input" placeholder="Your Name" required>
+                        <select id="review-rating-input">
+                            <option value="5">★★★★★ (5 Stars - Exceptional)</option>
+                            <option value="4">★★★★☆ (4 Stars - Lovely)</option>
+                            <option value="3">★★★☆☆ (3 Stars - Good)</option>
+                        </select>
+                        <textarea id="review-comment-input" placeholder="Share your experience with this piece..." rows="3" required></textarea>
+                        <button type="submit" class="submit-review-btn">SUBMIT REVIEW ♡</button>
+                    </form>
+
+                    <div id="modal-reviews-list" style="margin-top: 15px;">
+                        <!-- Injected reviews -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         HAMPER CHOICE CONFIRMATION MODAL ("Customize this hamper?")
+    ====================================================== -->
+    <div class="hamper-choice-modal-overlay" id="hamper-choice-modal" onclick="App.closeHamperChoiceModal(event)">
+        <div class="hamper-choice-modal-box" onclick="event.stopPropagation()">
+            <button type="button" class="hamper-choice-close-btn" onclick="App.closeHamperChoiceModal()" aria-label="Close">×</button>
+            <div class="hamper-choice-header">
+                <span class="hamper-choice-tag">CURATED HAMPER</span>
+                <h3 id="hamper-choice-title">The Draupadi Celebration Hamper</h3>
+                <p id="hamper-choice-desc" class="hamper-choice-desc">Artisanal curation packed in our signature keepsake box.</p>
+                <div class="hamper-choice-price-row">
+                    <span class="hamper-choice-price" id="hamper-choice-price">₹499</span>
+                    <span class="hamper-choice-orig-price" id="hamper-choice-orig-price">₹650</span>
+                </div>
+            </div>
+
+            <div class="hamper-choice-prompt-box">
+                <h4>Customize this hamper?</h4>
+                <p>Choose whether to order this curated assortment as it is, or personalize the items and budget in our Hamper Studio.</p>
+
+                <div class="hamper-choice-actions-grid">
+                    <button type="button" class="hamper-choice-btn-asis" id="hamper-choice-btn-asis" onclick="App.buyChosenHamperAsIs()">
+                        BUY AS IT IS →
+                    </button>
+                    <button type="button" class="hamper-choice-btn-custom" id="hamper-choice-btn-custom" onclick="App.customizeChosenHamper()">
+                        CUSTOMIZE IT 🎀
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         CUSTOM HAMPER BUILDER MODAL
+    ====================================================== -->
+    <div class="hamper-modal-overlay" id="hamper-builder-modal">
+        <div class="hamper-modal-container">
+            <!-- Modal Header -->
+            <div class="hamper-modal-header">
+                <div>
+                    <span class="hamper-eyebrow">🎀 BOUTIQUE CURATION STUDIO</span>
+                    <h2>Build Your Own Hamper</h2>
+                    <p class="hamper-subtitle">Curate personal artisan blooms, pearl jewellery, and slow-made treasures within your budget ♡</p>
+                </div>
+                <button class="hamper-modal-close" onclick="App.closeHamperBuilder()" aria-label="Close Hamper Builder">×</button>
+            </div>
+
+            <!-- Sticky Live Budget Tracker & Status Bar -->
+            <div class="hamper-budget-bar">
+                <div class="hamper-budget-controls">
+                    <span class="budget-label">Hamper Budget:</span>
+                    <div class="budget-presets-row">
+                        <button type="button" class="budget-chip" data-budget="499" onclick="App.setHamperBudget(499)">₹499</button>
+                        <button type="button" class="budget-chip active" data-budget="700" onclick="App.setHamperBudget(700)">₹700</button>
+                        <button type="button" class="budget-chip" data-budget="999" onclick="App.setHamperBudget(999)">₹999</button>
+                        <button type="button" class="budget-chip" data-budget="1499" onclick="App.setHamperBudget(1499)">₹1499</button>
+                        <div class="budget-custom-wrap">
+                            <span class="currency-symbol">₹</span>
+                            <input type="number" id="hamper-budget-input" value="700" min="100" max="10000" step="50" oninput="App.onCustomBudgetInput(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hamper-stats-grid">
+                    <div class="hamper-stat-item">
+                        <span class="stat-label">Budget</span>
+                        <strong class="stat-value" id="hamper-stat-budget">₹700</strong>
+                    </div>
+                    <div class="hamper-stat-item">
+                        <span class="stat-label">Selected Total</span>
+                        <strong class="stat-value" id="hamper-stat-total" style="color: var(--teal);">₹0</strong>
+                    </div>
+                    <div class="hamper-stat-item">
+                        <span class="stat-label" id="hamper-remaining-label">Remaining</span>
+                        <strong class="stat-value" id="hamper-stat-remaining" style="color: var(--terracotta);">₹700</strong>
+                    </div>
+                    <div class="hamper-stat-item">
+                        <span class="stat-label">Items</span>
+                        <strong class="stat-value" id="hamper-stat-count">0</strong>
+                    </div>
+                </div>
+
+                <!-- Progress Meter -->
+                <div class="hamper-progress-track">
+                    <div class="hamper-progress-fill" id="hamper-progress-fill" style="width: 0%;"></div>
+                </div>
+
+                <!-- Over Budget Friendly Warning -->
+                <div class="hamper-overbudget-alert" id="hamper-overbudget-alert" style="display: none;">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <strong>Your hamper is <span id="hamper-overbudget-amount">₹0</span> over budget.</strong>
+                        <span>You can remove an item to stay within budget, or continue with this custom assortment at the updated total!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hamper Builder Body: Split Pane (Products Grid vs Selected Drawer) -->
+            <div class="hamper-builder-body">
+                <!-- Left: Catalog Product Selector -->
+                <div class="hamper-products-pane">
+                    <!-- Category filter chips -->
+                    <div class="hamper-category-filters" id="hamper-category-filters">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="hamper-products-grid" id="hamper-products-grid">
+                        <!-- Populated dynamically with real products -->
+                    </div>
+                </div>
+
+                <!-- Right: Selected Hamper Items & Personalization -->
+                <div class="hamper-summary-pane" id="hamper-summary-pane">
+                    <div class="summary-pane-header">
+                        <h3>Your Hamper Assortment (<span id="hamper-summary-count">0</span> items)</h3>
+                    </div>
+
+                    <!-- Items List -->
+                    <div class="hamper-selected-list" id="hamper-selected-list">
+                        <div class="hamper-empty-notice">
+                            <span style="font-size: 36px; display: block; margin-bottom: 8px;">🎀</span>
+                            <strong>Your hamper is currently empty</strong>
+                            <p style="font-size: 12px; color: var(--soft-brown); margin-top: 4px;">Choose from our handcrafted jewellery, blooms, and accessories on the left to build your bespoke box ♡</p>
+                        </div>
+                    </div>
+
+                    <!-- Personalization Card -->
+                    <div class="hamper-personalization-card">
+                        <h4>Optional Personalization</h4>
+                        <div class="hamper-field-group">
+                            <label for="custom-hamper-name">Hamper Name</label>
+                            <input type="text" id="custom-hamper-name" placeholder="e.g. Birthday Surprise, Thinking of You, For Priya">
+                        </div>
+                        <div class="hamper-field-group">
+                            <label for="custom-hamper-note">Handwritten Note / Gift Message</label>
+                            <textarea id="custom-hamper-note" rows="2" placeholder="Write a gentle message for the complimentary calligraphy gift card..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Summary Footer Actions -->
+                    <div class="hamper-summary-footer">
+                        <div class="summary-final-total-row">
+                            <span>Total Hamper Value:</span>
+                            <strong id="hamper-final-total-price">₹0</strong>
+                        </div>
+                        <div class="hamper-actions-row">
+                            <button type="button" class="btn-hamper-add-cart" id="btn-hamper-add-cart" onclick="App.addCustomHamperToCart()" disabled>
+                                ADD HAMPER TO CART →
+                            </button>
+                            <button type="button" class="btn-hamper-buy-now" id="btn-hamper-buy-now" onclick="App.buyCustomHamperNow()" disabled>
+                                BUY THIS HAMPER NOW ♡
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         CHECKOUT PAGE
+    ====================================================== -->
+    <section class="checkout-page" id="checkout-page">
+        <div class="checkout-container">
+            <!-- Form -->
+            <div class="checkout-form">
+                <button class="back-to-cart" onclick="App.closeCheckout()">
+                    ← BACK TO SHOPPING
+                </button>
+                <p class="section-label">Almost yours</p>
+                <h1>Complete your order</h1>
+                <p class="checkout-intro">
+                    Just a few little details and your Dear Draupadi treasures will be on their way. ♡
+                </p>
+
+                <!-- Flow Steps Wizard Bar -->
+                <div class="checkout-steps-bar">
+                    <button type="button" class="checkout-step-tab active" id="checkout-step-tab-address" onclick="App.goToCheckoutAddress()">
+                        <span class="step-num" id="step-num-address">1</span>
+                        <span class="step-label">Delivery Address</span>
+                    </button>
+                    <div class="step-divider"></div>
+                    <button type="button" class="checkout-step-tab" id="checkout-step-tab-payment" onclick="App.goToCheckoutPayment()">
+                        <span class="step-num" id="step-num-payment">2</span>
+                        <span class="step-label">Payment & Offers</span>
+                    </button>
+                </div>
+
+                <!-- STEP 1 PANE: ADDRESS & CONTACT (Saved Addresses First) -->
+                <div class="checkout-step-pane" id="checkout-step-address">
+                    <!-- 01: Delivery Address (Saved Addresses First) -->
+                    <div class="checkout-block">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <h3 style="margin: 0;">01 — Delivery Address</h3>
+                            <button type="button" id="btn-toggle-add-address" class="btn-primary" onclick="App.showCheckoutAddAddressForm()" style="padding: 6px 14px; font-size: 10.5px; display: none;">
+                                + ADD ADDRESS
+                            </button>
+                        </div>
+
+                        <!-- Saved Addresses List (Displayed First) -->
+                        <div id="checkout-saved-addresses-wrap" style="display: none; margin-bottom: 16px;">
+                            <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--terracotta); letter-spacing: 0.5px; display: block; margin-bottom: 8px;">
+                                📍 Choose from your Saved Addresses:
+                            </label>
+                            <div id="checkout-saved-addresses-list" style="display: flex; flex-direction: column; gap: 8px;">
+                                <!-- Injected dynamically: Saved address cards + '+ Add Address' card -->
+                            </div>
+                        </div>
+
+                        <!-- Manual Address Form (Opened when adding new address or for new customer) -->
+                        <div id="checkout-manual-address-fields">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;" id="manual-address-header">
+                                <label style="font-weight: 700; font-size: 12px; color: var(--teal); text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Enter Delivery Address
+                                </label>
+                                <button type="button" id="btn-cancel-add-address" onclick="App.hideCheckoutAddAddressForm()" style="background: none; border: none; font-size: 11px; color: var(--terracotta); cursor: pointer; text-decoration: underline; display: none;">
+                                    Cancel & choose saved address
+                                </button>
+                            </div>
+                            <div class="input-group">
+                                <label>House / Flat / Street address</label>
+                                <textarea id="customer-address" placeholder="Flat / House no., Building, Street, Area" required></textarea>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>City</label>
+                                    <input type="text" id="customer-city" placeholder="City" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>State</label>
+                                    <input type="text" id="customer-state" placeholder="State" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>PIN Code</label>
+                                <input type="text" id="customer-pincode" placeholder="e.g. 560001" required>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--brown); cursor: pointer;">
+                                    <input type="checkbox" id="checkout-save-address-check" checked>
+                                    <span>Save this address to my profile for future boutique orders ♡</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 02: Contact Details -->
+                    <div class="checkout-block">
+                        <h3>02 — Contact Details</h3>
+                        <div class="input-group">
+                            <label>Full name</label>
+                            <input type="text" id="customer-name" placeholder="Your full name" required>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Email address</label>
+                                <input type="email" id="customer-email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Phone number</label>
+                                <input type="tel" id="customer-phone" placeholder="+91 98765 43210" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="place-order-button" onclick="App.goToCheckoutPayment()" style="margin-top: 10px;">
+                        CONTINUE TO PAYMENT & OFFERS →
+                    </button>
+                </div>
+
+                <!-- STEP 2 PANE: PAYMENT & OFFERS -->
+                <div class="checkout-step-pane" id="checkout-step-payment" style="display: none;">
+                    <!-- Selected Delivery Address Preview Card -->
+                    <div class="checkout-delivery-preview" id="checkout-delivery-preview">
+                        <div>
+                            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--teal); letter-spacing: 0.5px;">📍 Shipping To:</span>
+                            <strong id="preview-cust-name" style="display: block; font-size: 13.5px; margin-top: 2px; color: var(--brown);">Valued Customer</strong>
+                            <p id="preview-cust-address" style="font-size: 12px; color: var(--soft-brown); margin: 3px 0 0; line-height: 1.4;">Delivery destination details</p>
+                        </div>
+                        <button type="button" class="btn-change-addr" onclick="App.goToCheckoutAddress()">Change ✎</button>
+                    </div>
+
+                    <!-- Payment Options -->
+                    <div class="checkout-block">
+                        <h3>Select Payment Method</h3>
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="cod" checked>
+                            <div>
+                                <strong>Cash on Delivery</strong>
+                                <p>Pay comfortably when your parcel arrives at your doorstep.</p>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="upi">
+                            <div>
+                                <strong>UPI (GPay / PhonePe / Paytm - Demo)</strong>
+                                <p>Instant UPI verification (demo mode).</p>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="card">
+                            <div>
+                                <strong>Debit / Credit Card (Demo)</strong>
+                                <p>All major cards supported (demo simulation).</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Payment Step Offers & Coupon Dropdown -->
+                    <div class="checkout-block" style="margin-top: 16px;">
+                        <h3>Boutique Offers & Coupons</h3>
+                        <div class="cart-coupon-section" id="checkout-coupon-section">
+                            <div id="checkout-applied-coupon-wrap"></div>
+                            <button type="button" class="cart-coupon-toggle-btn" id="checkout-coupon-toggle-btn" onclick="App.toggleCheckoutCouponDropdown()">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 15px;">🎟️</span>
+                                    <span id="checkout-coupon-toggle-label" style="font-weight: 600; font-size: 12px; color: var(--brown);">Apply Coupon / Offers</span>
+                                </div>
+                                <span class="coupon-dropdown-arrow" id="checkout-coupon-arrow" style="font-size: 11px; transition: transform 0.2s;">▼</span>
+                            </button>
+                            <div class="cart-coupon-dropdown" id="checkout-coupon-dropdown" style="display: none;">
+                                <div class="cart-coupon-box" style="margin-bottom: 8px;">
+                                    <input type="text" id="checkout-coupon-code-input" placeholder="ENTER COUPON CODE" style="text-transform: uppercase;">
+                                    <button type="button" onclick="App.applyCheckoutCouponCode()">APPLY</button>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 6px;">
+                                    <span style="font-size: 10.5px; font-weight: 700; color: var(--terracotta); text-transform: uppercase; letter-spacing: 0.5px;">AVAILABLE OFFERS</span>
+                                </div>
+                                <div id="checkout-offers-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;">
+                                    <!-- Injected dynamically with eligibility check -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 12px; margin-top: 20px; align-items: center;">
+                        <button type="button" class="btn-secondary" onclick="App.goToCheckoutAddress()" style="flex: 1; padding: 14px; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: var(--radius-sm);">
+                            ← BACK TO ADDRESS
+                        </button>
+                        <button type="button" class="place-order-button" onclick="App.placeOrder()" style="flex: 2; margin-top: 0;">
+                            CONFIRM ORDER NOW ♡
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Sidebar -->
+            <div class="checkout-summary">
+                <div class="summary-card">
+                    <p class="section-label">Your order</p>
+                    <h2>Little treasures</h2>
+
+                    <div id="checkout-items" class="checkout-items"></div>
+
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span id="checkout-subtotal">₹0</span>
+                    </div>
+
+                    <div class="summary-line" id="checkout-discount-row" style="display: none; color: var(--terracotta);">
+                        <span>Coupon Discount</span>
+                        <span id="checkout-discount">-₹0</span>
+                    </div>
+                    <div id="checkout-discount-calc-note" style="display: none; font-size: 11px; color: var(--teal); margin: -4px 0 8px; text-align: right; line-height: 1.3;"></div>
+
+                    <div class="summary-line">
+                        <span>Delivery</span>
+                        <span style="color: var(--teal); font-weight: bold;">FREE</span>
+                    </div>
+
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <strong id="checkout-total">₹0</strong>
+                    </div>
+
+                    <p class="summary-note">Free handcrafted delivery on all orders ♡</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         ORDER SUCCESS MODAL
+    ====================================================== -->
+    <div class="order-success" id="order-success">
+        <div class="success-card">
+            <div class="success-symbol">♡</div>
+            <p class="section-label">Thank you</p>
+            <h2>Your order is placed!</h2>
+            <p>
+                Thank you for choosing Dear Draupadi. Your little treasures will be prepared and packed with lots of love.
+            </p>
+
+            <div class="order-number-tag" id="order-number-tag">
+                ORDER #DD000000
+            </div>
+
+            <div class="success-actions">
+                <button class="btn-primary" onclick="App.openMyOrders()">
+                    VIEW MY ORDERS →
+                </button>
+                <button class="btn-secondary" onclick="App.closeSuccess()">
+                    CONTINUE SHOPPING
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MY ORDERS & LIVE TRACKING MODAL
+    ====================================================== -->
+    <div class="order-tracking-modal" id="order-tracking-modal" onclick="if(event.target===this) App.closeMyOrders();">
+        <div class="tracking-card" style="max-width: 680px; width: 95%;">
+            <button class="product-modal-close" onclick="App.closeMyOrders()" aria-label="Close My Orders">×</button>
+            <p class="section-label">Your Boutique Treasures</p>
+            <h2 id="my-orders-modal-title">My Orders</h2>
+            <p style="font-size: 12.5px; color: var(--soft-brown); margin: 4px 0 16px;">
+                Review your previous purchases, customized pieces, and track live order progress ♡
+            </p>
+
+            <div class="search-input-wrap" style="margin: 0 auto 18px; max-width: 440px;">
+                <span>🔍</span>
+                <input type="text" id="tracking-search-input" placeholder="Search by Order ID (e.g. DD-ORD-8) or Phone" onkeyup="if(event.key==='Enter') App.lookupOrder(this.value);">
+                <button class="add-cart-btn" onclick="App.lookupOrder(document.getElementById('tracking-search-input').value)">FIND</button>
+            </div>
+
+            <div id="tracking-order-details" style="max-height: 65vh; overflow-y: auto; padding-right: 4px;">
+                <!-- Injected customer orders & live tracking timeline -->
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         BOUTIQUE OFFERS & COUPONS MODAL
+    ====================================================== -->
+    <div class="customer-modal-overlay" id="offers-modal" onclick="if(event.target===this) App.closeOffersModal();">
+        <div class="offers-modal-card">
+            <button class="product-modal-close" onclick="App.closeOffersModal()" aria-label="Close offers">×</button>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 28px;">🏷️</span>
+                <p class="section-label" style="margin-top: 4px;">Exclusive Boutique Privileges</p>
+                <h2 style="font-family: Georgia, serif; font-size: 22px; color: var(--teal); margin: 4px 0 6px;">Boutique Offers & Coupons</h2>
+                <p style="font-size: 12.5px; color: var(--soft-brown); margin: 0;">
+                    Handcrafted delights and sweet savings created especially for you ♡
+                </p>
+            </div>
+            <div id="offers-modal-list" style="overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; max-height: 55vh;">
+                <!-- Dynamically populated with all admin coupons -->
+            </div>
+
+            <div class="offers-modal-footer" style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #ebd9c8; text-align: center;">
+                <button type="button" class="btn-primary" onclick="App.navigateToShop()" style="width: 100%; padding: 12px 20px; font-size: 12px; letter-spacing: 1px; font-weight: 700; border-radius: 4px; cursor: pointer;">
+                    START SHOPPING →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+          CUSTOMER AUTHENTICATION MODAL (LOGIN & REGISTER)
+    ====================================================== -->
+    <div class="customer-modal-overlay" id="customer-auth-modal" onclick="if(event.target===this) App.closeAuthModal();">
+        <div class="customer-auth-card">
+            <button class="product-modal-close" onclick="App.closeAuthModal()" aria-label="Close authentication">×</button>
+            
+            <div class="auth-card-header">
+                <div class="auth-brand-symbol">❀</div>
+                <h2 id="auth-title">Dear Draupadi</h2>
+                <p class="auth-subtitle">Little treasures, chosen with love ♡</p>
+            </div>
+
+            <!-- Purchase Context Notice (displayed when login is required to continue purchase) -->
+            <div class="auth-purchase-notice" id="auth-purchase-notice" style="display: none;">
+                <span class="purchase-notice-icon">🛍️</span>
+                <span id="auth-purchase-notice-text">Please sign in or create an account to proceed with your purchase ♡</span>
+            </div>
+
+            <!-- Auth Mode Switcher Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tab-btn-login" onclick="App.switchAuthTab('login')">SIGN IN</button>
+                <button class="auth-tab-btn" id="tab-btn-register" onclick="App.switchAuthTab('register')">CREATE ACCOUNT</button>
+            </div>
+
+            <!-- Notice / Message Container -->
+            <div class="auth-feedback" id="auth-feedback" style="display: none;"></div>
+
+            <!-- 1. SIGN IN FORM -->
+            <form id="customer-login-form" class="auth-form" onsubmit="App.handleCustomerLogin(event)">
+                <div class="form-group-boutique">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" placeholder="name@example.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group-boutique">
+                    <div class="form-label-row">
+                        <label for="login-password">Password</label>
+                        <a href="javascript:void(0)" class="forgot-link" onclick="App.handleForgotPassword()">Forgot Password?</a>
+                    </div>
+                    <div class="password-input-wrap">
+                        <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-pw" onclick="App.togglePasswordVisibility('login-password', this)" aria-label="Show password">👁</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary auth-submit-btn" id="login-submit-btn">
+                    SIGN IN →
+                </button>
+
+                <p class="auth-switch-prompt">
+                    New to Dear Draupadi? 
+                    <a href="javascript:void(0)" onclick="App.switchAuthTab('register')">Create an account</a>
+                </p>
+            </form>
+
+            <!-- 2. REGISTER FORM -->
+            <form id="customer-register-form" class="auth-form" style="display: none;" onsubmit="App.handleCustomerRegister(event)">
+                <div class="form-group-boutique">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" placeholder="e.g. Priya Sharma" required autocomplete="name">
+                </div>
+
+                <div class="form-group-boutique">
+                    <label for="register-email">Email Address</label>
+                    <input type="email" id="register-email" placeholder="name@example.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group-boutique">
+                    <label for="register-password">Choose Password</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="register-password" placeholder="Minimum 6 characters" required autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pw" onclick="App.togglePasswordVisibility('register-password', this)" aria-label="Show password">👁</button>
+                    </div>
+                </div>
+
+                <div class="form-group-boutique">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="register-confirm-password" placeholder="Re-enter password" required autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pw" onclick="App.togglePasswordVisibility('register-confirm-password', this)" aria-label="Show password">👁</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary auth-submit-btn" id="register-submit-btn">
+                    CREATE ACCOUNT ❀
+                </button>
+
+                <p class="auth-switch-prompt">
+                    Already have an account? 
+                    <a href="javascript:void(0)" onclick="App.switchAuthTab('login')">Sign In</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================
+          CUSTOMER ACCOUNT PORTAL MODAL
+    ====================================================== -->
+    <div class="customer-modal-overlay" id="customer-account-modal" onclick="if(event.target===this) App.closeCustomerAccount();">
+        <div class="customer-account-card">
+            <button class="product-modal-close" onclick="App.closeCustomerAccount()" aria-label="Close account">×</button>
+
+            <!-- Account Header -->
+            <div class="account-header">
+                <div class="account-avatar-wrap">
+                    <div class="account-avatar" id="account-avatar-char">D</div>
+                </div>
+                <div class="account-header-info">
+                    <p class="section-label" style="margin-bottom: 4px;">Customer Account</p>
+                    <h2 id="account-display-name">Welcome Back ♡</h2>
+                    <p class="account-email-sub" id="account-display-email">customer@example.com</p>
+                </div>
+                <button class="account-logout-btn" onclick="App.handleCustomerLogout()" title="Log out">
+                    Logout <span>↗</span>
+                </button>
+            </div>
+
+            <!-- Account Navigation Tabs -->
+            <div class="account-nav-bar">
+                <button class="account-nav-tab active" data-tab="orders" onclick="App.switchAccountTab('orders')">
+                    📦 My Orders
+                </button>
+                <button class="account-nav-tab" data-tab="profile" onclick="App.switchAccountTab('profile')">
+                    👤 Profile Details
+                </button>
+                <button class="account-nav-tab" data-tab="address" onclick="App.switchAccountTab('address')">
+                    📍 Saved Addresses
+                </button>
+                <button class="account-nav-tab" data-tab="wishlist" onclick="App.closeCustomerAccount(); App.openWishlist();">
+                    ♡ Wishlist
+                </button>
+            </div>
+
+            <!-- Account Tab Panes -->
+            <div class="account-content-body">
+                <!-- 1. ORDERS PANE -->
+                <div class="account-pane active" id="account-pane-orders">
+                    <div id="account-orders-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- 2. PROFILE PANE -->
+                <div class="account-pane" id="account-pane-profile">
+                    <div class="profile-info-grid">
+                        <div class="profile-field">
+                            <span class="field-label">Name</span>
+                            <span class="field-value" id="profile-name-val">—</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">Email Address</span>
+                            <span class="field-value" id="profile-email-val">—</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">Member Since</span>
+                            <span class="field-value" id="profile-since-val">—</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">Boutique Status</span>
+                            <span class="field-value" style="color: var(--teal); font-weight: 600;">Valued Collector ❀</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. ADDRESS PANE: MULTIPLE ADDRESSES MANAGEMENT -->
+                <div class="account-pane" id="account-pane-address">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                            <h3 style="font-size: 15px; font-family: Georgia, serif; color: var(--teal); margin: 0;">Saved Delivery Addresses</h3>
+                            <p style="font-size: 11.5px; color: var(--soft-brown); margin: 2px 0 0;">Save multiple addresses for seamless one-click boutique deliveries ♡</p>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="App.openAddAddressForm()" style="padding: 7px 14px; font-size: 10.5px; letter-spacing: 0.5px;">
+                            + ADD NEW ADDRESS
+                        </button>
+                    </div>
+
+                    <!-- List of Saved Address Cards -->
+                    <div id="account-addresses-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                        <!-- Injected dynamically -->
+                    </div>
+
+                    <!-- Add / Edit Address Form Modal or Toggle Box -->
+                    <div id="account-address-form-box" style="display: none; background: var(--cream); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 16px; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <strong id="address-form-title" style="font-size: 13px; color: var(--teal); text-transform: uppercase; letter-spacing: 0.5px;">Add New Delivery Address</strong>
+                            <button type="button" onclick="App.closeAddressForm()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: var(--soft-brown);">✕</button>
+                        </div>
+                        <form id="saved-address-form" onsubmit="App.handleSaveAddress(event)">
+                            <input type="hidden" id="account-address-id" value="">
+                            
+                            <div class="input-row">
+                                <div class="form-group-boutique" style="flex: 1;">
+                                    <label for="account-address-label">Address Tag / Label</label>
+                                    <select id="account-address-label" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; background: #fff;">
+                                        <option value="Home">Home 🏠</option>
+                                        <option value="Work">Work / Office 🏢</option>
+                                        <option value="Other">Other / Gift Recipient 🎁</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-boutique" style="flex: 1.5;">
+                                    <label for="account-address-name">Recipient Name</label>
+                                    <input type="text" id="account-address-name" placeholder="Name on parcel">
+                                </div>
+                            </div>
+
+                            <div class="form-group-boutique">
+                                <label for="account-address-input">Street / House Address</label>
+                                <input type="text" id="account-address-input" placeholder="Flat, House no., Building, Street name" required>
+                            </div>
+
+                            <div class="input-row">
+                                <div class="form-group-boutique">
+                                    <label for="account-city-input">City</label>
+                                    <input type="text" id="account-city-input" placeholder="City" required>
+                                </div>
+                                <div class="form-group-boutique">
+                                    <label for="account-state-input">State</label>
+                                    <input type="text" id="account-state-input" placeholder="State" required>
+                                </div>
+                                <div class="form-group-boutique">
+                                    <label for="account-pincode-input">Pincode</label>
+                                    <input type="text" id="account-pincode-input" placeholder="Pincode" required>
+                                </div>
+                            </div>
+
+                            <div style="margin: 10px 0 14px;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; color: var(--brown);">
+                                    <input type="checkbox" id="account-address-default" checked>
+                                    <span>Set as my default delivery address</span>
+                                </label>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <button type="button" class="btn-cancel" onclick="App.closeAddressForm()" style="background: transparent; border: 1px solid var(--border); padding: 8px 16px; font-size: 11px; cursor: pointer; border-radius: 4px;">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn-primary" style="padding: 8px 18px; font-size: 11px;">
+                                    SAVE ADDRESS ♡
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="env.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="store.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
