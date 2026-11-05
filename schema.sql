@@ -576,4 +576,45 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.update_product_stock_admin(INTEGER, INTEGER) TO anon, authenticated;
 
+-- ==========================================================
+-- 13. CUSTOMER DATA SYNCHRONIZATION (WISHLIST & CART MULTI-DEVICE SYNC)
+-- ==========================================================
+CREATE TABLE IF NOT EXISTS public.customer_sync (
+    email TEXT PRIMARY KEY,
+    wishlist JSONB DEFAULT '[]'::jsonb,
+    cart JSONB DEFAULT '[]'::jsonb,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Ensure wishlist and cart columns exist in customers table as well
+ALTER TABLE public.customers ADD COLUMN IF NOT EXISTS wishlist JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.customers ADD COLUMN IF NOT EXISTS cart JSONB DEFAULT '[]'::jsonb;
+
+ALTER TABLE public.customer_sync ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public select on customer_sync" ON public.customer_sync;
+CREATE POLICY "Allow public select on customer_sync"
+ON public.customer_sync FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on customer_sync" ON public.customer_sync;
+CREATE POLICY "Allow public insert on customer_sync"
+ON public.customer_sync FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on customer_sync" ON public.customer_sync;
+CREATE POLICY "Allow public update on customer_sync"
+ON public.customer_sync FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on customer_sync" ON public.customer_sync;
+CREATE POLICY "Allow public delete on customer_sync"
+ON public.customer_sync FOR DELETE
+TO anon, authenticated
+USING (true);
+
 

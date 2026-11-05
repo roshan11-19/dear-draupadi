@@ -496,6 +496,12 @@ const Store = {
         // Fetch product catalogue and categories from Supabase
         await this.fetchProductsFromSupabase();
         await this.fetchOrdersFromSupabase();
+
+        // If customer session is active, synchronize cloud wishlist & cart
+        const session = this.getCustomerSession();
+        if (session && session.isLoggedIn && session.user && session.user.email) {
+            this.fetchCustomerDataFromSupabase(session.user.email);
+        }
     },
 
     // ==================== SUPABASE PRODUCT CATALOGUE INTEGRATION ====================
@@ -2169,6 +2175,12 @@ const Store = {
             localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cartItems));
         }
         this.emit('cart:updated', cartItems);
+
+        // Synchronize with Supabase cloud if customer is logged in
+        const session = this.getCustomerSession();
+        if (session && session.isLoggedIn && session.user && session.user.email) {
+            this.syncUserDataToSupabase(session.user.email, { cart: cartItems });
+        }
     },
 
     addToCart(productIdOrName, quantity = 1, customPrice = null, hamperOptions = null) {
@@ -2385,6 +2397,12 @@ const Store = {
             localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(items));
         }
         this.emit('wishlist:updated', items);
+
+        // Synchronize with Supabase cloud if customer is logged in
+        const session = this.getCustomerSession();
+        if (session && session.isLoggedIn && session.user && session.user.email) {
+            this.syncUserDataToSupabase(session.user.email, { wishlist: items });
+        }
     },
 
     toggleWishlist(productIdentifier) {
@@ -2413,6 +2431,146 @@ const Store = {
         const id = product ? String(product.id) : String(productIdentifier);
         const name = product ? product.name : null;
         return wishlist.some(item => item === id || (name && item === name));
+    },
+
+    // ==================== MULTI-DEVICE CLOUD SYNC (WISHLIST & CART) ====================
+    async syncUserDataToSupabase(email, updates = {}) {
+        if (!email) return;
+        const cleanEmail = email.trim().toLowerCase();
+        const client = window.supabaseAdminClient || window.supabaseClient;
+        if (!client) return;
+
+        try {
+            // 1. Upsert into customer_sync table
+            const payload = {
+                email: cleanEmail,
+                updated_at: new Date().toISOString()
+            };
+            if (updates.wishlist !== undefined) payload.wishlist = updates.wishlist;
+            if (updates.cart !== undefined) payload.cart = updates.cart;
+
+            const { error: syncErr } = await client.from('customer_sync').upsert(payload, { onConflict: 'email' });
+
+            // 2. Mirror into customers table if customer record exists
+            try {
+                const custPayload = {};
+                if (updates.wishlist !== undefined) custPayload.wishlist = updates.wishlist;
+                if (updates.cart !== undefined) custPayload.cart = updates.cart;
+                await client.from('customers').update(custPayload).ilike('email', cleanEmail);
+            } catch (cErr) {}
+
+            if (syncErr) {
+                console.warn("⚠️ [Dear Draupadi] Supabase sync notice:", syncErr.message);
+            }
+        } catch (err) {
+            console.warn("⚠️ [Dear Draupadi] Supabase sync error:", err.message);
+        }
+    },
+
+    async fetchCustomerDataFromSupabase(email) {
+        if (!email) return null;
+        const cleanEmail = email.trim().toLowerCase();
+        const client = window.supabaseAdminClient || window.supabaseClient;
+        if (!client) return null;
+
+        try {
+            let cloudWishlist = null;
+            let cloudCart = null;
+
+            // 1. Fetch from customer_sync
+            try {
+                const { data: syncData, error: syncErr } = await client
+                    .from('customer_sync')
+                    .select('wishlist, cart')
+                    .ilike('email', cleanEmail)
+                    .maybeSingle();
+
+                if (!syncErr && syncData) {
+                    if (Array.isArray(syncData.wishlist)) cloudWishlist = syncData.wishlist;
+                    if (Array.isArray(syncData.cart)) cloudCart = syncData.cart;
+                }
+            } catch (syncEx) {}
+
+            // 2. Fallback to customers table
+            if (cloudWishlist === null || cloudCart === null) {
+                try {
+                    const { data: custData } = await client
+                        .from('customers')
+                        .select('wishlist, cart')
+                        .ilike('email', cleanEmail)
+                        .maybeSingle();
+
+                    if (custData) {
+                        if (cloudWishlist === null && Array.isArray(custData.wishlist)) cloudWishlist = custData.wishlist;
+                        if (cloudCart === null && Array.isArray(custData.cart)) cloudCart = custData.cart;
+                    }
+                } catch (custEx) {}
+            }
+
+            const wKey = `dd_wishlist_${cleanEmail}`;
+            const cKey = `dd_cart_${cleanEmail}`;
+
+            // Check if there is guest data to merge (if user added items as guest on this device before logging in)
+            let currentLocalWishlist = [];
+            try {
+                const lw = localStorage.getItem(wKey);
+                if (lw) currentLocalWishlist = JSON.parse(lw);
+                else {
+                    const gw = localStorage.getItem('dd_wishlist_guest');
+                    if (gw) currentLocalWishlist = JSON.parse(gw);
+                }
+            } catch (e) {}
+
+            let currentLocalCart = [];
+            try {
+                const lc = localStorage.getItem(cKey);
+                if (lc) currentLocalCart = JSON.parse(lc);
+                else {
+                    const gc = localStorage.getItem('dd_cart_guest');
+                    if (gc) currentLocalCart = JSON.parse(gc);
+                }
+            } catch (e) {}
+
+            // Merge cloud and local data
+            let mergedWishlist = cloudWishlist !== null ? [...cloudWishlist] : [...currentLocalWishlist];
+            if (cloudWishlist !== null && currentLocalWishlist.length > 0) {
+                currentLocalWishlist.forEach(id => {
+                    if (!mergedWishlist.includes(String(id))) {
+                        mergedWishlist.push(String(id));
+                    }
+                });
+            }
+
+            let mergedCart = cloudCart !== null ? [...cloudCart] : [...currentLocalCart];
+            if (cloudCart !== null && currentLocalCart.length > 0) {
+                currentLocalCart.forEach(localItem => {
+                    const match = mergedCart.find(ci => String(ci.id) === String(localItem.id) && ci.name === localItem.name);
+                    if (!match) {
+                        mergedCart.push(localItem);
+                    }
+                });
+            }
+
+            // Hydrate localStorage
+            localStorage.setItem(wKey, JSON.stringify(mergedWishlist));
+            localStorage.setItem(cKey, JSON.stringify(mergedCart));
+
+            // Sync back to Supabase if local guest items were merged or cloud was empty
+            if (cloudWishlist === null || cloudCart === null || currentLocalCart.length > 0 || currentLocalWishlist.length > 0) {
+                this.syncUserDataToSupabase(cleanEmail, {
+                    wishlist: mergedWishlist,
+                    cart: mergedCart
+                });
+            }
+
+            this.emit('wishlist:updated', mergedWishlist);
+            this.emit('cart:updated', mergedCart);
+
+            return { wishlist: mergedWishlist, cart: mergedCart };
+        } catch (err) {
+            console.warn("⚠️ [Dear Draupadi] Supabase fetch customer data notice:", err.message);
+            return null;
+        }
     },
 
     // ==================== AUTH / ADMIN SESSION ====================
@@ -2521,6 +2679,7 @@ const Store = {
                 localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
                 this.recordCustomerRegistration(cleanEmail, cleanName);
                 this.emit('customer:auth', session);
+                await this.fetchCustomerDataFromSupabase(cleanEmail);
                 this.emit('wishlist:updated', this.getWishlist());
                 this.emit('cart:updated', this.getCart());
                 return { success: true, user: session.user };
@@ -2542,6 +2701,7 @@ const Store = {
         localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
         this.recordCustomerRegistration(cleanEmail, cleanName);
         this.emit('customer:auth', session);
+        await this.fetchCustomerDataFromSupabase(cleanEmail);
         this.emit('wishlist:updated', this.getWishlist());
         this.emit('cart:updated', this.getCart());
         return { success: true, user: session.user };
@@ -2576,6 +2736,7 @@ const Store = {
                 };
                 localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
                 this.emit('customer:auth', session);
+                await this.fetchCustomerDataFromSupabase(cleanEmail);
                 this.emit('wishlist:updated', this.getWishlist());
                 this.emit('cart:updated', this.getCart());
                 return { success: true, user: session.user };
@@ -2600,6 +2761,7 @@ const Store = {
         };
         localStorage.setItem(STORAGE_KEYS.CUSTOMER_SESSION, JSON.stringify(session));
         this.emit('customer:auth', session);
+        await this.fetchCustomerDataFromSupabase(cleanEmail);
         this.emit('wishlist:updated', this.getWishlist());
         this.emit('cart:updated', this.getCart());
         return { success: true, user: session.user };
