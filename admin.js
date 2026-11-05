@@ -60,6 +60,10 @@ const AdminApp = {
                 if (this.currentTab === 'customers') this.renderCustomersTab();
                 if (this.currentTab === 'analytics') this.renderAnalyticsTab();
             }
+            if (e.key === 'dd_categories_v2' || e.key === 'dd_deleted_categories') {
+                if (this.currentTab === 'categories') this.renderCategoriesTab();
+                this.updateCategoryFilterDropdown();
+            }
         });
 
         // Listen for store events to keep admin reactive
@@ -84,6 +88,7 @@ const AdminApp = {
         });
         window.addEventListener('categories:updated', () => {
             if (this.currentTab === 'categories') this.renderCategoriesTab();
+            this.updateCategoryFilterDropdown();
         });
         window.addEventListener('hampers:updated', () => {
             if (this.currentTab === 'hampers') this.renderHampersTab();
@@ -385,16 +390,20 @@ const AdminApp = {
             `;
         }).join('');
 
-        // Populate category dropdown filter if empty
+        // Populate/update category dropdown filter
+        this.updateCategoryFilterDropdown();
+    },
+
+    updateCategoryFilterDropdown() {
         const filterSelect = document.getElementById('admin-product-category-filter');
-        if (filterSelect && filterSelect.options.length <= 1) {
+        if (filterSelect) {
+            const currentVal = filterSelect.value || 'all';
             const categories = Store.getCategories();
+            let optionsHtml = '<option value="all">All Categories</option>';
             categories.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat;
-                opt.textContent = cat;
-                filterSelect.appendChild(opt);
+                optionsHtml += `<option value="${cat}" ${cat === currentVal ? 'selected' : ''}>${cat}</option>`;
             });
+            filterSelect.innerHTML = optionsHtml;
         }
     },
 
@@ -1662,15 +1671,17 @@ const AdminApp = {
         if (success) {
             input.value = '';
             this.renderCategoriesTab();
+            this.updateCategoryFilterDropdown();
         } else {
-            alert(`Category "${catName}" already exists or is invalid.`);
+            alert(`Collection/Category "${catName}" already exists or could not be added.`);
         }
     },
 
     async deleteCategory(catName) {
-        if (!confirm(`Are you sure you want to delete the category "${catName}"?`)) return;
+        if (!confirm(`Are you sure you want to delete the collection/category "${catName}"?`)) return;
         await Store.deleteCategory(catName);
         this.renderCategoriesTab();
+        this.updateCategoryFilterDropdown();
     },
 
     // ==================== 8. SETTINGS & RESET ====================

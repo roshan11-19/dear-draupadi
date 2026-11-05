@@ -132,24 +132,81 @@ ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
 
--- 1. Categories: Public can read
+-- 1. Categories: Full public CRUD for boutique collections
 DROP POLICY IF EXISTS "Allow public read on categories" ON public.categories;
 CREATE POLICY "Allow public read on categories"
 ON public.categories FOR SELECT
 TO anon, authenticated
 USING (true);
 
--- 2. Products: Public can read
+DROP POLICY IF EXISTS "Allow public insert on categories" ON public.categories;
+CREATE POLICY "Allow public insert on categories"
+ON public.categories FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on categories" ON public.categories;
+CREATE POLICY "Allow public update on categories"
+ON public.categories FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on categories" ON public.categories;
+CREATE POLICY "Allow public delete on categories"
+ON public.categories FOR DELETE
+TO anon, authenticated
+USING (true);
+
+-- 2. Products: Full public CRUD for storefront & admin catalog management
 DROP POLICY IF EXISTS "Allow public read on products" ON public.products;
 CREATE POLICY "Allow public read on products"
 ON public.products FOR SELECT
 TO anon, authenticated
 USING (true);
 
--- 3. Product Images: Public can read
+DROP POLICY IF EXISTS "Allow public insert on products" ON public.products;
+CREATE POLICY "Allow public insert on products"
+ON public.products FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on products" ON public.products;
+CREATE POLICY "Allow public update on products"
+ON public.products FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on products" ON public.products;
+CREATE POLICY "Allow public delete on products"
+ON public.products FOR DELETE
+TO anon, authenticated
+USING (true);
+
+-- 3. Product Images: Public can read, insert, update, delete
 DROP POLICY IF EXISTS "Allow public read on product_images" ON public.product_images;
 CREATE POLICY "Allow public read on product_images"
 ON public.product_images FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on product_images" ON public.product_images;
+CREATE POLICY "Allow public insert on product_images"
+ON public.product_images FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on product_images" ON public.product_images;
+CREATE POLICY "Allow public update on product_images"
+ON public.product_images FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on product_images" ON public.product_images;
+CREATE POLICY "Allow public delete on product_images"
+ON public.product_images FOR DELETE
 TO anon, authenticated
 USING (true);
 
@@ -166,21 +223,60 @@ ON public.reviews FOR INSERT
 TO anon, authenticated
 WITH CHECK (true);
 
--- 5. Coupons: Public can read active coupons
+DROP POLICY IF EXISTS "Allow public update on reviews" ON public.reviews;
+CREATE POLICY "Allow public update on reviews"
+ON public.reviews FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+-- 5. Coupons: Public can read, insert, update, delete
 DROP POLICY IF EXISTS "Allow public read on coupons" ON public.coupons;
 CREATE POLICY "Allow public read on coupons"
 ON public.coupons FOR SELECT
 TO anon, authenticated
-USING (active = true);
+USING (true);
 
--- 6. Customers: Public can insert their own customer details during checkout
+DROP POLICY IF EXISTS "Allow public insert on coupons" ON public.coupons;
+CREATE POLICY "Allow public insert on coupons"
+ON public.coupons FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on coupons" ON public.coupons;
+CREATE POLICY "Allow public update on coupons"
+ON public.coupons FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on coupons" ON public.coupons;
+CREATE POLICY "Allow public delete on coupons"
+ON public.coupons FOR DELETE
+TO anon, authenticated
+USING (true);
+
+-- 6. Customers: Public can select, insert, update customer profiles & multiple addresses
+DROP POLICY IF EXISTS "Allow public select on customers" ON public.customers;
+CREATE POLICY "Allow public select on customers"
+ON public.customers FOR SELECT
+TO anon, authenticated
+USING (true);
+
 DROP POLICY IF EXISTS "Allow public insert on customers" ON public.customers;
 CREATE POLICY "Allow public insert on customers"
 ON public.customers FOR INSERT
 TO anon, authenticated
 WITH CHECK (true);
 
--- 7. Orders & Order Items: Public can place orders and track orders
+DROP POLICY IF EXISTS "Allow public update on customers" ON public.customers;
+CREATE POLICY "Allow public update on customers"
+ON public.customers FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+-- 7. Orders & Order Items: Public can place orders, update orders, and track orders
 DROP POLICY IF EXISTS "Allow public insert on orders" ON public.orders;
 CREATE POLICY "Allow public insert on orders"
 ON public.orders FOR INSERT
@@ -192,6 +288,13 @@ CREATE POLICY "Allow public select on orders"
 ON public.orders FOR SELECT
 TO anon, authenticated
 USING (true);
+
+DROP POLICY IF EXISTS "Allow public update on orders" ON public.orders;
+CREATE POLICY "Allow public update on orders"
+ON public.orders FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Allow public insert on order_items" ON public.order_items;
 CREATE POLICY "Allow public insert on order_items"
@@ -205,10 +308,9 @@ ON public.order_items FOR SELECT
 TO anon, authenticated
 USING (true);
 
--- 8. Products: Allow update for stock synchronization
-DROP POLICY IF EXISTS "Allow public update on products" ON public.products;
-CREATE POLICY "Allow public update on products"
-ON public.products FOR UPDATE
+DROP POLICY IF EXISTS "Allow public update on order_items" ON public.order_items;
+CREATE POLICY "Allow public update on order_items"
+ON public.order_items FOR UPDATE
 TO anon, authenticated
 USING (true)
 WITH CHECK (true);

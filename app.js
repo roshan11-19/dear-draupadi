@@ -25,6 +25,7 @@ const App = {
     init() {
         this.bindEvents();
         this.renderCategoryFilters();
+        this.renderEditorialCollections();
         this.renderProducts();
         this.updateCartUI();
         this.updateWishlistCount();
@@ -33,7 +34,10 @@ const App = {
 
         // Listen for store events
         window.addEventListener('products:updated', () => this.renderProducts());
-        window.addEventListener('categories:updated', () => this.renderCategoryFilters());
+        window.addEventListener('categories:updated', () => {
+            this.renderCategoryFilters();
+            this.renderEditorialCollections();
+        });
         window.addEventListener('hampers:updated', () => this.renderProducts());
         window.addEventListener('cart:updated', () => this.updateCartUI());
         window.addEventListener('cart:warning', (e) => this.showToast(e.detail || 'Maximum stock reached ♡'));
@@ -85,6 +89,10 @@ const App = {
                 this.updateWishlistCount();
                 this.renderWishlistDrawer();
                 this.renderProducts();
+            }
+            if (e.key === 'dd_categories_v2' || e.key === 'dd_deleted_categories') {
+                this.renderCategoryFilters();
+                this.renderEditorialCollections();
             }
         });
     },
@@ -164,6 +172,60 @@ const App = {
                 <button class="filter-button ${this.currentCategory === cat.toLowerCase() ? 'active' : ''}" onclick="App.filterCategory('${cat.toLowerCase()}', this)">${cat.toUpperCase()}</button>
             `).join('')}
         `;
+    },
+
+    renderEditorialCollections() {
+        const grid = document.getElementById('editorial-collections-grid');
+        if (!grid) return;
+
+        const categories = Store.getCategories();
+        if (!categories || categories.length === 0) return;
+
+        const symbolMap = {
+            'flowers': '❀',
+            'jewellery': '✦',
+            'jewelry': '✦',
+            'crochet': '♡',
+            'hampers': '✿',
+            'accessories': '🎀',
+            'bracelets': '✨',
+            'rings': '💍',
+            'earrings': '🏺',
+            'new arrivals': '✧'
+        };
+
+        const sublineMap = {
+            'flowers': 'Handmade blooms that never fade.',
+            'jewellery': 'Little pieces to treasure.',
+            'jewelry': 'Little pieces to treasure.',
+            'crochet': 'Made slowly, made with love.',
+            'hampers': 'Gifts made for someone special.',
+            'accessories': 'Delicate accents for everyday grace.',
+            'bracelets': 'Artisanal wrists adorned in beauty.',
+            'rings': 'Handcrafted brass and solitaire gems.',
+            'new arrivals': 'Something new has arrived.'
+        };
+
+        const defaultSymbols = ['❀', '✦', '♡', '✿', '✧', '🎀', '✨', '💍'];
+
+        grid.innerHTML = categories.map((cat, idx) => {
+            const lower = cat.toLowerCase();
+            const symbol = symbolMap[lower] || defaultSymbols[idx % defaultSymbols.length];
+            const subline = sublineMap[lower] || 'Curated handmade treasures made with love.';
+            const numStr = String(idx + 1).padStart(2, '0');
+
+            return `
+                <div class="editorial-card" onclick="App.filterCategory('${lower}')">
+                    <div class="collection-symbol">${symbol}</div>
+                    <div class="editorial-content">
+                        <div class="collection-number">${numStr} / COLLECTION</div>
+                        <h3>${cat}</h3>
+                        <p>${subline}</p>
+                        <span class="collection-link">EXPLORE →</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
     },
 
     // ==================== DATA-DRIVEN CARD RENDERERS ====================

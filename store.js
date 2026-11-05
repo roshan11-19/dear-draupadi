@@ -1143,11 +1143,15 @@ const Store = {
         if (client) {
             try {
                 const slug = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                await client.from('categories').insert([{
+                const { error: insErr } = await client.from('categories').upsert([{
                     name: trimmed,
                     slug: slug
-                }]);
-                console.log(`🌸 [Dear Draupadi] Category "${trimmed}" persisted to Supabase!`);
+                }], { onConflict: 'slug' });
+                if (insErr) {
+                    console.warn("⚠️ Category Supabase insert notice:", insErr.message);
+                } else {
+                    console.log(`🌸 [Dear Draupadi] Category "${trimmed}" persisted to Supabase!`);
+                }
             } catch (err) {
                 console.warn("⚠️ Category Supabase insert notice:", err.message);
             }
@@ -1173,12 +1177,27 @@ const Store = {
 
         this.emit('categories:updated', categories);
 
-        // Delete from Supabase
+        // Delete from Supabase safely
         const client = window.supabaseAdminClient || window.supabaseClient;
         if (client) {
             try {
-                await client.from('categories').delete().ilike('name', trimmed);
-                console.log(`🌸 [Dear Draupadi] Category "${trimmed}" deleted from Supabase!`);
+                // 1. First disassociate any products referencing this category in Supabase
+                const { data: catRows } = await client.from('categories').select('id').ilike('name', trimmed);
+                if (catRows && catRows.length > 0) {
+                    for (const row of catRows) {
+                        try {
+                            await client.from('products').update({ category_id: null }).eq('category_id', row.id);
+                        } catch (prodUpErr) {}
+                    }
+                }
+
+                // 2. Delete from Supabase categories table
+                const { error: delErr } = await client.from('categories').delete().ilike('name', trimmed);
+                if (delErr) {
+                    console.warn("⚠️ Category Supabase delete notice:", delErr.message);
+                } else {
+                    console.log(`🌸 [Dear Draupadi] Category "${trimmed}" deleted from Supabase!`);
+                }
             } catch (err) {
                 console.warn("⚠️ Category Supabase delete notice:", err.message);
             }

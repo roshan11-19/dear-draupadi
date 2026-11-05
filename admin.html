@@ -101,7 +101,7 @@
                 </li>
                 <li>
                     <button class="nav-tab-btn" data-tab="categories" onclick="AdminApp.switchTab('categories')">
-                        <span class="tab-icon">🏷️</span> Categories
+                        <span class="tab-icon">🏷️</span> Collections & Categories
                     </button>
                 </li>
                 <li>
@@ -546,12 +546,12 @@
                     </div>
                 </div>
 
-                <!-- 6. CATEGORIES TAB -->
+                <!-- 6. CATEGORIES / COLLECTIONS TAB -->
                 <div class="admin-tab-pane" id="tab-categories">
                     <div class="table-toolbar">
                         <div style="display:flex; gap:10px;">
-                            <input type="text" id="new-category-input" placeholder="New Category Name" class="form-group" style="padding: 8px 14px; margin: 0; width: 250px;" onkeydown="if(event.key==='Enter') AdminApp.addNewCategory();">
-                            <button class="btn-admin-primary" onclick="AdminApp.addNewCategory()">+ Add Category</button>
+                            <input type="text" id="new-category-input" placeholder="New Collection / Category Name" class="form-group" style="padding: 8px 14px; margin: 0; width: 270px;" onkeydown="if(event.key==='Enter') AdminApp.addNewCategory();">
+                            <button class="btn-admin-primary" onclick="AdminApp.addNewCategory()">+ Add Collection</button>
                         </div>
                     </div>
 

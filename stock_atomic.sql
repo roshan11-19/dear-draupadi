@@ -1,9 +1,161 @@
 -- ==========================================================
--- Dear Draupadi - Atomic Stock Reservation & Order Placement RPC
--- Run this script in Supabase Dashboard -> SQL Editor
+-- Dear Draupadi - Complete Safe Database Update Script
+-- SAFE & NON-DESTRUCTIVE: Existing products and collections are 100% PRESERVED.
+-- Run this script directly in the Supabase Dashboard -> SQL Editor
 -- ==========================================================
 
--- 1. Enable UPDATE on products table for anon & authenticated roles
+-- 1. Ensure Tables Exist Without Dropping Any Data
+CREATE TABLE IF NOT EXISTS public.categories (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.products (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    category_id INTEGER REFERENCES public.categories(id) ON DELETE SET NULL,
+    description TEXT,
+    price NUMERIC NOT NULL,
+    original_price NUMERIC,
+    stock INTEGER DEFAULT 10,
+    materials TEXT,
+    size TEXT,
+    care_instructions TEXT,
+    featured BOOLEAN DEFAULT false,
+    new_arrival BOOLEAN DEFAULT false,
+    bestseller BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.product_images (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER REFERENCES public.products(id) ON DELETE CASCADE,
+    image_url TEXT NOT NULL,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.customers (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    phone TEXT,
+    address TEXT,
+    city TEXT,
+    state TEXT,
+    pincode TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES public.customers(id) ON DELETE SET NULL,
+    total_amount NUMERIC NOT NULL,
+    discount NUMERIC DEFAULT 0,
+    payment_method TEXT,
+    payment_status TEXT DEFAULT 'pending',
+    order_status TEXT DEFAULT 'placed',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER REFERENCES public.orders(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES public.products(id) ON DELETE SET NULL,
+    product_name TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    price NUMERIC NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.reviews (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER REFERENCES public.products(id) ON DELETE CASCADE,
+    customer_id INTEGER REFERENCES public.customers(id) ON DELETE SET NULL,
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    status TEXT DEFAULT 'approved',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.coupons (
+    id SERIAL PRIMARY KEY,
+    code TEXT UNIQUE NOT NULL,
+    discount_type TEXT DEFAULT 'percentage',
+    discount_value NUMERIC NOT NULL,
+    minimum_spend NUMERIC DEFAULT 0,
+    description TEXT,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Ensure Safe Foreign Key Behavior (ON DELETE SET NULL on products.category_id)
+-- This ensures deleting a category/collection never deletes products or causes foreign key errors
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE constraint_name = 'products_category_id_fkey' AND table_name = 'products'
+    ) THEN
+        ALTER TABLE public.products DROP CONSTRAINT products_category_id_fkey;
+        ALTER TABLE public.products 
+            ADD CONSTRAINT products_category_id_fkey 
+            FOREIGN KEY (category_id) REFERENCES public.categories(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
+-- 3. Enable Row Level Security (RLS) on All Tables
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
+
+-- 4. RLS Policies: CATEGORIES (Full public CRUD for storefront & admin management)
+DROP POLICY IF EXISTS "Allow public read on categories" ON public.categories;
+CREATE POLICY "Allow public read on categories"
+ON public.categories FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on categories" ON public.categories;
+CREATE POLICY "Allow public insert on categories"
+ON public.categories FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on categories" ON public.categories;
+CREATE POLICY "Allow public update on categories"
+ON public.categories FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on categories" ON public.categories;
+CREATE POLICY "Allow public delete on categories"
+ON public.categories FOR DELETE
+TO anon, authenticated
+USING (true);
+
+-- 5. RLS Policies: PRODUCTS (Full public CRUD for storefront & admin stock updates)
+DROP POLICY IF EXISTS "Allow public read on products" ON public.products;
+CREATE POLICY "Allow public read on products"
+ON public.products FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on products" ON public.products;
+CREATE POLICY "Allow public insert on products"
+ON public.products FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
 DROP POLICY IF EXISTS "Allow public update on products" ON public.products;
 CREATE POLICY "Allow public update on products"
 ON public.products FOR UPDATE
@@ -11,11 +163,145 @@ TO anon, authenticated
 USING (true)
 WITH CHECK (true);
 
--- 2. Atomic Order Placement RPC Function with Row-Level Locking (FOR UPDATE)
--- This function executes in a single PostgreSQL transaction.
--- It locks each product row, verifies available stock, decrements stock atomically,
--- creates the customer and order, and inserts order items.
--- If any product has insufficient stock, it aborts and rolls back completely.
+DROP POLICY IF EXISTS "Allow public delete on products" ON public.products;
+CREATE POLICY "Allow public delete on products"
+ON public.products FOR DELETE
+TO anon, authenticated
+USING (true);
+
+-- 6. RLS Policies: PRODUCT IMAGES
+DROP POLICY IF EXISTS "Allow public read on product_images" ON public.product_images;
+CREATE POLICY "Allow public read on product_images"
+ON public.product_images FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on product_images" ON public.product_images;
+CREATE POLICY "Allow public insert on product_images"
+ON public.product_images FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on product_images" ON public.product_images;
+CREATE POLICY "Allow public update on product_images"
+ON public.product_images FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on product_images" ON public.product_images;
+CREATE POLICY "Allow public delete on product_images"
+ON public.product_images FOR DELETE
+TO anon, authenticated
+USING (true);
+
+-- 7. RLS Policies: CUSTOMERS
+DROP POLICY IF EXISTS "Allow public select on customers" ON public.customers;
+CREATE POLICY "Allow public select on customers"
+ON public.customers FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on customers" ON public.customers;
+CREATE POLICY "Allow public insert on customers"
+ON public.customers FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on customers" ON public.customers;
+CREATE POLICY "Allow public update on customers"
+ON public.customers FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+-- 8. RLS Policies: ORDERS & ORDER ITEMS
+DROP POLICY IF EXISTS "Allow public select on orders" ON public.orders;
+CREATE POLICY "Allow public select on orders"
+ON public.orders FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on orders" ON public.orders;
+CREATE POLICY "Allow public insert on orders"
+ON public.orders FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on orders" ON public.orders;
+CREATE POLICY "Allow public update on orders"
+ON public.orders FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public select on order_items" ON public.order_items;
+CREATE POLICY "Allow public select on order_items"
+ON public.order_items FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on order_items" ON public.order_items;
+CREATE POLICY "Allow public insert on order_items"
+ON public.order_items FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on order_items" ON public.order_items;
+CREATE POLICY "Allow public update on order_items"
+ON public.order_items FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+-- 9. RLS Policies: COUPONS
+DROP POLICY IF EXISTS "Allow public read on coupons" ON public.coupons;
+CREATE POLICY "Allow public read on coupons"
+ON public.coupons FOR SELECT
+TO anon, authenticated
+USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert on coupons" ON public.coupons;
+CREATE POLICY "Allow public insert on coupons"
+ON public.coupons FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on coupons" ON public.coupons;
+CREATE POLICY "Allow public update on coupons"
+ON public.coupons FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete on coupons" ON public.coupons;
+CREATE POLICY "Allow public delete on coupons"
+ON public.coupons FOR DELETE
+TO anon, authenticated
+USING (true);
+
+-- 10. RLS Policies: REVIEWS
+DROP POLICY IF EXISTS "Allow public read on reviews" ON public.reviews;
+CREATE POLICY "Allow public read on reviews"
+ON public.reviews FOR SELECT
+TO anon, authenticated
+USING (status = 'approved' OR status IS NULL);
+
+DROP POLICY IF EXISTS "Allow public insert on reviews" ON public.reviews;
+CREATE POLICY "Allow public insert on reviews"
+ON public.reviews FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update on reviews" ON public.reviews;
+CREATE POLICY "Allow public update on reviews"
+ON public.reviews FOR UPDATE
+TO anon, authenticated
+USING (true)
+WITH CHECK (true);
+
+-- 11. Atomic Order Placement RPC Function with Row-Level Locking (FOR UPDATE)
+-- Locks product rows, decrements stock atomically for products and custom hamper components
 CREATE OR REPLACE FUNCTION public.place_order_atomic(
     p_customer JSONB,
     p_shipping JSONB,
@@ -41,7 +327,6 @@ DECLARE
     v_res JSONB;
     v_updated_products JSONB := '[]'::JSONB;
 BEGIN
-    -- Validate items array
     IF p_items IS NULL OR jsonb_array_length(p_items) = 0 THEN
         RAISE EXCEPTION 'Order must contain at least one item.';
     END IF;
@@ -49,7 +334,6 @@ BEGIN
     -- Validate and lock stock for each item in the order
     FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
     LOOP
-        -- Check regular product or direct product ID
         IF v_item ? 'product_id' OR v_item ? 'id' THEN
             BEGIN
                 v_product_id := (COALESCE(v_item->>'product_id', v_item->>'id'))::INTEGER;
@@ -60,7 +344,6 @@ BEGIN
             IF v_product_id IS NOT NULL THEN
                 v_quantity := COALESCE((v_item->>'quantity')::INTEGER, 1);
 
-                -- Row-level locking to prevent race conditions on last unit
                 SELECT stock, name INTO v_current_stock, v_product_name
                 FROM public.products
                 WHERE id = v_product_id
@@ -75,7 +358,6 @@ BEGIN
                         v_product_name, v_current_stock, v_quantity;
                 END IF;
 
-                -- Atomically deduct stock
                 UPDATE public.products
                 SET stock = stock - v_quantity,
                     updated_at = NOW()
@@ -89,7 +371,7 @@ BEGIN
             END IF;
         END IF;
 
-        -- Check if item is a hamper with components
+        -- Deduct stock for hamper components
         IF (v_item->>'isHamper')::BOOLEAN IS TRUE AND v_item ? 'hamperItems' AND jsonb_typeof(v_item->'hamperItems') = 'array' THEN
             DECLARE
                 v_hamper_item JSONB;
@@ -118,7 +400,7 @@ BEGIN
                         END IF;
 
                         IF v_current_stock < v_h_qty THEN
-                            RAISE EXCEPTION 'Insufficient stock for hamper component "%". Available: %, Requested: %',
+                            RAISE EXCEPTION 'Insufficient stock for hamper component "%". Available: %, Required: %',
                                 v_product_name, v_current_stock, v_h_qty;
                         END IF;
 
@@ -138,11 +420,11 @@ BEGIN
         END IF;
     END LOOP;
 
-    -- Upsert or locate customer
-    IF p_customer ? 'email' AND p_customer->>'email' IS NOT NULL AND trim(p_customer->>'email') <> '' THEN
+    -- Upsert Customer Record
+    IF p_customer ? 'email' AND trim(p_customer->>'email') <> '' THEN
         SELECT id INTO v_customer_id
         FROM public.customers
-        WHERE lower(email) = lower(trim(p_customer->>'email'))
+        WHERE lower(trim(email)) = lower(trim(p_customer->>'email'))
         LIMIT 1;
 
         IF v_customer_id IS NOT NULL THEN
@@ -181,10 +463,10 @@ BEGIN
         RETURNING id INTO v_customer_id;
     END IF;
 
+    -- Insert Order
     v_total := COALESCE((p_pricing->>'total')::NUMERIC, 0);
     v_discount := COALESCE((p_pricing->>'discount')::NUMERIC, 0);
 
-    -- Insert Order
     INSERT INTO public.orders (
         customer_id,
         total_amount,
@@ -199,8 +481,8 @@ BEGIN
         v_total,
         v_discount,
         p_payment_method,
-        CASE WHEN p_payment_method = 'Cash on Delivery' THEN 'pending' ELSE 'paid' END,
-        'placed',
+        'Pending',
+        'Order Placed',
         NOW()
     )
     RETURNING id INTO v_order_id;
@@ -214,9 +496,17 @@ BEGIN
             v_product_id := NULL;
         END;
 
-        v_product_name := COALESCE(v_item->>'name', 'Artisan Creation');
+        v_product_name := COALESCE(v_item->>'name', 'Artisanal Treasure');
         v_quantity := COALESCE((v_item->>'quantity')::INTEGER, 1);
         v_price := COALESCE((v_item->>'price')::NUMERIC, 0);
+
+        IF (v_item->>'isHamper')::BOOLEAN IS TRUE THEN
+            v_product_name := v_product_name || ' ||HAMPER_DATA||' || jsonb_build_object(
+                'isHamper', true,
+                'customMessage', COALESCE(v_item->>'customMessage', ''),
+                'hamperItems', COALESCE(v_item->'hamperItems', '[]'::JSONB)
+            )::TEXT;
+        END IF;
 
         INSERT INTO public.order_items (
             order_id,
@@ -248,7 +538,7 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.place_order_atomic(JSONB, JSONB, JSONB, JSONB, TEXT) TO anon, authenticated;
 
--- 3. Atomic Admin Stock Update RPC
+-- 12. Atomic Admin Stock Update RPC
 CREATE OR REPLACE FUNCTION public.update_product_stock_admin(
     p_product_id INTEGER,
     p_new_stock INTEGER
